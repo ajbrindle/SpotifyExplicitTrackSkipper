@@ -44,16 +44,19 @@ public class TrackLookup {
     }
 
     public void skipExplicit (String id) {
-        lookupTrack(setId(id));
+        lookupTrack(setId(id), false);
     }
 
-    private void lookupTrack(String id) {
+    private void lookupTrack(String id, boolean abortIfExpired) {
         // Check whether authorisation has expired
         SharedPreferences prefs = context.getSharedPreferences(
                 AppConstants.APP_PREFERENCES_KEY, context.MODE_PRIVATE);
         String expiryTime = prefs.getString(AppConstants.PREFERENCE_AUTH_EXPIRY, "");
         if (hasExpired(expiryTime)) {
             Toast.makeText(context, "Spotify authorisation has expired", Toast.LENGTH_SHORT);
+            if (!abortIfExpired) {
+                refreshSpotifyAuthToken(id);
+            }
             return;
         }
 
@@ -115,6 +118,56 @@ public class TrackLookup {
         }
 
         return false;
+    }
+
+    private void refreshSpotifyAuthToken(String id) {
+        // POST the refresh token
+        SharedPreferences prefs = context.getSharedPreferences(
+                AppConstants.APP_PREFERENCES_KEY, context.MODE_PRIVATE);
+        String refreshToken = prefs.getString(AppConstants.PREFERENCE_REFRESH_TOKEN, "");
+        getNewAccessToken(refreshToken, id);
+    }
+
+    private void getNewAccessToken(String refreshToken, String id) {
+        final String trackId = id;
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url = "http://www.sk7software.com/spotify/SpotifyAuthorise/refresh.php?refreshToken=" + refreshToken;
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+            (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        String accessToken = response.getString("access_token");
+                        Integer expirySeconds = response.getInt("expires_in");
+                        String expiryTime = AppConstants.calcExpiryTime(expirySeconds.toString());
+                        Log.d(TAG, "Access token: " + accessToken);
+                        Log.d(TAG, "Expires in: " + expirySeconds);
+                        Log.d(TAG, "Expiry time: " + expiryTime);
+                        SharedPreferences prefs = context.getSharedPreferences(
+                                AppConstants.APP_PREFERENCES_KEY, context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putString(AppConstants.PREFERENCE_AUTH_TOKEN, accessToken);
+                        editor.putString(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
+                        editor.commit();
+                        lookupTrack(trackId, true);
+                    } catch (JSONException e) {
+                        Log.d(TAG, "JSONException: " + e.getMessage());
+                    }
+                }
+            },
+                    new Response.ErrorListener()
+                    {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // TODO Auto-generated method stub
+                            Log.d(TAG, "Error => " + error.toString());
+                        }
+                    }
+            );
+        Log.d(TAG, jsObjRequest.toString());
+        queue.add(jsObjRequest);
+
+
     }
 
     private void skipTrack() {

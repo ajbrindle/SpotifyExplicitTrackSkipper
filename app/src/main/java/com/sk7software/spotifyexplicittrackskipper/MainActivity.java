@@ -5,8 +5,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -32,6 +36,7 @@ public class MainActivity extends Activity implements
 
     private TextView txtProgress;
     private ToggleButton togExplicit;
+    private WebView webViewSpotify;
 
 //    private Player mPlayer;
 
@@ -51,6 +56,50 @@ public class MainActivity extends Activity implements
                 editor.commit();
             }
         });
+
+        class MyJavaScriptInterface
+        {
+            // private TextView contentView;
+            private Activity activity;
+
+//            public MyJavaScriptInterface(Activity activity) {
+//                this.activity = activity;
+//            }
+
+            @SuppressWarnings("unused")
+            @JavascriptInterface
+            public void processContent(String aContent)
+            {
+                final String content = aContent;
+                setApplicationPreferences(aContent);
+//                contentView.post(new Runnable() {
+//                    public void run() {
+//                        //contentView.setText(content);
+//                    }
+//                });
+            }
+        }
+
+        webViewSpotify = (WebView)findViewById(R.id.webViewSpotify);
+        webViewSpotify.getSettings().setJavaScriptEnabled(true);
+        webViewSpotify.addJavascriptInterface(new MyJavaScriptInterface(), "INTERFACE");
+
+        final Activity activity = this;
+        webViewSpotify.setWebViewClient(new WebViewClient() {
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                Toast.makeText(activity, description, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onPageFinished(WebView view, String url)
+            {
+                view.loadUrl("javascript:window.INTERFACE.processContent(document.getElementsByTagName('body')[0].innerText);");
+            }
+        });
+
+        webViewSpotify.loadUrl("http://www.sk7software.com/spotify/SpotifyAuthorise/index.php");
+        //setContentView(webViewSpotify);
+
+        /*
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
                 AuthenticationResponse.Type.TOKEN,
                 REDIRECT_URI);
@@ -58,6 +107,7 @@ public class MainActivity extends Activity implements
         AuthenticationRequest request = builder.build();
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+        */
     }
 
     @Override
@@ -78,7 +128,7 @@ public class MainActivity extends Activity implements
                         AppConstants.APP_PREFERENCES_KEY, getApplicationContext().MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString(AppConstants.PREFERENCE_AUTH_TOKEN, response.getAccessToken());
-                editor.putString(AppConstants.PREFERENCE_AUTH_EXPIRY, calcExpiryTime(response.getExpiresIn()));
+                //editor.putString(AppConstants.PREFERENCE_AUTH_EXPIRY, calcExpiryTime(response.getExpiresIn()));
                 editor.commit();
             }
         }
@@ -135,12 +185,25 @@ public class MainActivity extends Activity implements
         Log.d(TAG, "Received connection message: " + message);
     }
 
-    private String calcExpiryTime(int expiresInSecs) {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, expiresInSecs);
-        SimpleDateFormat sdf = new SimpleDateFormat(AppConstants.EXPIRY_TIME_FORMAT);
-        String expiryTime = sdf.format(cal.getTime());
-        Log.d(TAG, "Expiry time: " + expiryTime);
-        return expiryTime;
+    private void setApplicationPreferences(String response) {
+        if (response.contains("<Access>")) {
+            String accessToken = response.substring(response.indexOf("<Access>")+8, response.indexOf("<Refresh>"));
+            String refreshToken = response.substring(response.indexOf("<Refresh>")+9, response.indexOf("<Expires>"));
+            String expirySeconds = response.substring(response.indexOf("<Expires>")+9, response.indexOf("<END>"));
+            String expiryTime = AppConstants.calcExpiryTime(expirySeconds);
+            Log.d(TAG, "Access token: " + accessToken);
+            Log.d(TAG, "Refresh token: " + refreshToken);
+            Log.d(TAG, "Expires in: " + expirySeconds);
+            Log.d(TAG, "Expiry time: " + expiryTime);
+            SharedPreferences prefs = getApplicationContext().getSharedPreferences(
+                    AppConstants.APP_PREFERENCES_KEY, getApplicationContext().MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(AppConstants.PREFERENCE_AUTH_TOKEN, accessToken);
+            editor.putString(AppConstants.PREFERENCE_REFRESH_TOKEN, refreshToken);
+            editor.putString(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
+            editor.commit();
+        }
     }
+
+
 }
