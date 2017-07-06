@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.sk7software.spotifyexplicittrackskipper.MainActivity">
+    tools:context="com.sk7software.spotifyexplicittrackskipper.AuthoriseActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -33,15 +33,4 @@
 
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/txtProgress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Started"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault" />
-
-    <WebView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/webViewSpotify" />
 </LinearLayout>

@@ -44,20 +44,14 @@ public class TrackLookup {
     }
 
     public void skipExplicit (String id) {
-        lookupTrack(setId(id), false);
+        lookupTrack(setId(id));
     }
 
-    private void lookupTrack(String id, boolean abortIfExpired) {
+    private void lookupTrack(String id) {
         // Check whether authorisation has expired
-        SharedPreferences prefs = context.getSharedPreferences(
-                AppConstants.APP_PREFERENCES_KEY, context.MODE_PRIVATE);
-        String expiryTime = prefs.getString(AppConstants.PREFERENCE_AUTH_EXPIRY, "");
-        if (hasExpired(expiryTime)) {
+        if (SpotifyUtil.authExpired(context)) {
             Toast.makeText(context, "Spotify authorisation has expired", Toast.LENGTH_SHORT);
-            if (!abortIfExpired) {
-                refreshSpotifyAuthToken(id);
-            }
-            return;
+            SpotifyUtil.refreshSpotifyAuthToken(context);
         }
 
         RequestQueue queue = Volley.newRequestQueue(context);
@@ -70,7 +64,7 @@ public class TrackLookup {
                             boolean explicit = response.getBoolean("explicit");
                             Log.d(TAG, "Explicit: " + explicit);
                             if (explicit) {
-                                skipTrack();
+                                SpotifyUtil.skipTrack(context);
                             }
                         } catch (JSONException e) {
                             Log.d(TAG, "JSONException: " + e.getMessage());
@@ -90,9 +84,7 @@ public class TrackLookup {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String>  params = new HashMap<String, String>();
-                SharedPreferences prefs = context.getSharedPreferences(
-                        AppConstants.APP_PREFERENCES_KEY, context.MODE_PRIVATE);
-                String token = prefs.getString(AppConstants.PREFERENCE_AUTH_TOKEN, "");
+                String token = PreferencesUtil.getStringPreference(context, AppConstants.PREFERENCE_AUTH_TOKEN);
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }
@@ -101,93 +93,6 @@ public class TrackLookup {
         queue.add(jsObjRequest);
     }
 
-    private boolean hasExpired(String expiryTimeStr) {
-        if (expiryTimeStr.length() == 0) {
-            return true;
-        } else {
-            DateFormat formatter = new SimpleDateFormat(AppConstants.EXPIRY_TIME_FORMAT);
-            try {
-                Date expiryTime = formatter.parse(expiryTimeStr);
-                if (expiryTime.before(new Date())) {
-                    return true;
-                }
-            } catch (ParseException e) {
-                Log.d(TAG, "Error parsing expiry time: " + e.getMessage());
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void refreshSpotifyAuthToken(String id) {
-        // POST the refresh token
-        SharedPreferences prefs = context.getSharedPreferences(
-                AppConstants.APP_PREFERENCES_KEY, context.MODE_PRIVATE);
-        String refreshToken = prefs.getString(AppConstants.PREFERENCE_REFRESH_TOKEN, "");
-        getNewAccessToken(refreshToken, id);
-    }
-
-    private void getNewAccessToken(String refreshToken, String id) {
-        final String trackId = id;
-        RequestQueue queue = Volley.newRequestQueue(context);
-        String url = "http://www.sk7software.com/spotify/SpotifyAuthorise/refresh.php?refreshToken=" + refreshToken;
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-            (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        String accessToken = response.getString("access_token");
-                        Integer expirySeconds = response.getInt("expires_in");
-                        String expiryTime = AppConstants.calcExpiryTime(expirySeconds.toString());
-                        Log.d(TAG, "Access token: " + accessToken);
-                        Log.d(TAG, "Expires in: " + expirySeconds);
-                        Log.d(TAG, "Expiry time: " + expiryTime);
-                        SharedPreferences prefs = context.getSharedPreferences(
-                                AppConstants.APP_PREFERENCES_KEY, context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.putString(AppConstants.PREFERENCE_AUTH_TOKEN, accessToken);
-                        editor.putString(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
-                        editor.commit();
-                        lookupTrack(trackId, true);
-                    } catch (JSONException e) {
-                        Log.d(TAG, "JSONException: " + e.getMessage());
-                    }
-                }
-            },
-                    new Response.ErrorListener()
-                    {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            // TODO Auto-generated method stub
-                            Log.d(TAG, "Error => " + error.toString());
-                        }
-                    }
-            );
-        Log.d(TAG, jsObjRequest.toString());
-        queue.add(jsObjRequest);
-
-
-    }
-
-    private void skipTrack() {
-        SharedPreferences prefs = context.getSharedPreferences(
-                AppConstants.APP_PREFERENCES_KEY, context.MODE_PRIVATE);
-        boolean skip = prefs.getBoolean(AppConstants.PREFERENCE_SKIP_EXPLICIT, false);
-
-        if (skip) {
-            Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
-            i.setComponent(new ComponentName("com.spotify.music", "com.spotify.music.internal.receiver.MediaButtonReceiver"));
-            i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT));
-            context.sendBroadcast(i);
-
-            //release the button
-            i = new Intent(Intent.ACTION_MEDIA_BUTTON);
-            i.setComponent(new ComponentName("com.spotify.music", "com.spotify.music.internal.receiver.MediaButtonReceiver"));
-            i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_NEXT));
-            context.sendBroadcast(i);
-        }
-    }
 
     private String setId(String id) {
         if (id.contains(ID_PREFIX)) {
