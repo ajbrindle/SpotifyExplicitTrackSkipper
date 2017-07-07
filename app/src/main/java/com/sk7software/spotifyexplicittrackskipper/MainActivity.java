@@ -1,11 +1,9 @@
 package com.sk7software.spotifyexplicittrackskipper;
 
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.ToggleButton;
 
 public class MainActivity extends AppCompatActivity {
 
