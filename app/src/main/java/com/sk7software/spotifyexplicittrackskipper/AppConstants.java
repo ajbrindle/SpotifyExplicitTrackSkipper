@@ -10,6 +10,7 @@ import java.util.Calendar;
  */
 
 public class AppConstants {
+    // Preferences constants
     public static final String APP_PREFERENCES_KEY = "SK7_SPOTIFY_TRACK_PREFS";
     public static final String PREFERENCE_AUTH_TOKEN = "PREF_SPOTIFY_AUTH_TOKEN";
     public static final String PREFERENCE_REFRESH_TOKEN = "PREF_SPOTIFY_REFRESH_TOKEN";
