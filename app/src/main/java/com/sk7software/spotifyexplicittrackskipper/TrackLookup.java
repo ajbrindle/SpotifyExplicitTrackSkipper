@@ -43,17 +43,26 @@ public class TrackLookup {
         this.context = context.getApplicationContext();
     }
 
-    public void skipExplicit (String id) {
+    public void skipExplicit(String id) {
         lookupTrack(setId(id));
     }
 
-    private void lookupTrack(String id) {
+    private void lookupTrack(final String id) {
         // Check whether authorisation has expired
-        if (SpotifyUtil.authExpired(context)) {
+        if (SpotifyUtil.authExpired()) {
             Toast.makeText(context, "Spotify authorisation has expired", Toast.LENGTH_SHORT);
-            SpotifyUtil.refreshSpotifyAuthToken(context);
+            SpotifyUtil.refreshSpotifyAuthToken(context, id, new SpotifyUtil.SpotifyCallback() {
+                @Override
+                public void onRequestCompleted(String callbackData) {
+                    fetchTrackInfo(context, id);
+                }
+            });
+        } else {
+            fetchTrackInfo(context, id);
         }
+    }
 
+    private void fetchTrackInfo(final Context context, String id) {
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = TRACK_URI + id;
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -71,20 +80,18 @@ public class TrackLookup {
                         }
                     }
                 },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
-                        Log.d(TAG, "Error => " + error.toString());
-                    }
-                }
-        )
-        {
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // TODO Auto-generated method stub
+                                Log.d(TAG, "Error => " + error.toString());
+                            }
+                        }
+                ) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String>  params = new HashMap<String, String>();
-                String token = PreferencesUtil.getStringPreference(context, AppConstants.PREFERENCE_AUTH_TOKEN);
+                Map<String, String> params = new HashMap<String, String>();
+                String token = PreferencesUtil.getStringPreference(AppConstants.PREFERENCE_AUTH_TOKEN);
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }

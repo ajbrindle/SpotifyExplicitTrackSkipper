@@ -29,8 +29,12 @@ public class SpotifyUtil {
 
     private static final String TAG = SpotifyUtil.class.getSimpleName();
 
-    public static boolean authExpired(Context context) {
-        String expiryTimeStr = PreferencesUtil.getStringPreference(context, AppConstants.PREFERENCE_AUTH_EXPIRY);
+    public interface SpotifyCallback {
+        public void onRequestCompleted(String callbackData);
+    }
+
+    public static boolean authExpired() {
+        String expiryTimeStr = PreferencesUtil.getStringPreference(AppConstants.PREFERENCE_AUTH_EXPIRY);
 
         if (expiryTimeStr.length() == 0) {
             return true;
@@ -46,21 +50,20 @@ public class SpotifyUtil {
                 return true;
             }
         }
-
         return false;
     }
 
-    public static boolean refreshSpotifyAuthToken(Context context) {
-        String refreshToken = PreferencesUtil.getStringPreference(context, AppConstants.PREFERENCE_REFRESH_TOKEN);
+    public static boolean refreshSpotifyAuthToken(Context context, String callbackData, SpotifyCallback callback) {
+        String refreshToken = PreferencesUtil.getStringPreference(AppConstants.PREFERENCE_REFRESH_TOKEN);
         if ("".equals(refreshToken)) {
             return false;
         } else {
-            getNewAccessToken(context, refreshToken);
+            getNewAccessToken(context, refreshToken, callbackData, callback);
             return true;
         }
     }
 
-    private static void getNewAccessToken(final Context context, final String refreshToken) {
+    private static void getNewAccessToken(final Context context, final String refreshToken, final String callbackData, final SpotifyCallback callback) {
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = "http://www.sk7software.com/spotify/SpotifyAuthorise/refresh.php?refreshToken=" + refreshToken;
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -74,8 +77,9 @@ public class SpotifyUtil {
                             Log.d(TAG, "Access token: " + accessToken);
                             Log.d(TAG, "Expires in: " + expirySeconds);
                             Log.d(TAG, "Expiry time: " + expiryTime);
-                            PreferencesUtil.addPreference(context, AppConstants.PREFERENCE_AUTH_TOKEN, accessToken);
-                            PreferencesUtil.addPreference(context, AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
+                            PreferencesUtil.addPreference(AppConstants.PREFERENCE_AUTH_TOKEN, accessToken);
+                            PreferencesUtil.addPreference(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
+                            callback.onRequestCompleted(callbackData);
                         } catch (JSONException e) {
                             Log.d(TAG, "JSONException: " + e.getMessage());
                         }
@@ -95,7 +99,7 @@ public class SpotifyUtil {
     }
 
     public static void skipTrack(Context context) {
-        boolean skip = PreferencesUtil.getBooleanPreference(context, AppConstants.PREFERENCE_SKIP_EXPLICIT);
+        boolean skip = PreferencesUtil.getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT);
 
         if (skip) {
             Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);

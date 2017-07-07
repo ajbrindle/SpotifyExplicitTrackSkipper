@@ -18,6 +18,9 @@ public class AppConstants {
 
     public static final String EXPIRY_TIME_FORMAT = "dd/MM/yyyy HH:mm";
 
+    public static final String CLIENT_ID = "3b479b12ae87444c9384b1e5a14ca708";
+    public static final String REDIRECT_URI = "http://www.sk7software.com/spotify/SpotifyAuthorise/token.php";
+
     public static String calcExpiryTime(String expiresInSecs) {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.SECOND, Integer.valueOf(expiresInSecs));
