@@ -83,7 +83,6 @@ public class TrackLookup {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                // TODO Auto-generated method stub
                                 Log.d(TAG, "Error => " + error.toString());
                             }
                         }
@@ -99,7 +98,6 @@ public class TrackLookup {
         Log.d(TAG, jsObjRequest.toString());
         queue.add(jsObjRequest);
     }
-
 
     private String setId(String id) {
         if (id.contains(ID_PREFIX)) {
