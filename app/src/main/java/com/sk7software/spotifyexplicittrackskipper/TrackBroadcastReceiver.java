@@ -29,6 +29,9 @@ public class TrackBroadcastReceiver extends BroadcastReceiver {
         // old the event is.
         long timeSentInMs = intent.getLongExtra("timeSent", 0L);
 
+        // Ensure there is a context for preferences
+        PreferencesUtil.setContext(context);
+
         String action = intent.getAction();
 
         if (action.equals(BroadcastTypes.METADATA_CHANGED)) {
@@ -36,7 +39,7 @@ public class TrackBroadcastReceiver extends BroadcastReceiver {
             String artistName = intent.getStringExtra("artist");
             String trackName = intent.getStringExtra("track");
             Log.d(TAG, "Track: " + trackName + "; Artist: " + artistName + " (" + trackId + ")");
-            TrackLookup t = new TrackLookup(context.getApplicationContext());
+            TrackLookup t = new TrackLookup(context);
             t.skipExplicit(trackId);
         }
     }

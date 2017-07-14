@@ -4,25 +4,27 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
+import com.sk7software.spotifyexplicittrackskipper.music.Track;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +42,7 @@ public class TrackLookup {
     private Context context;
 
     public TrackLookup(Context context) {
-        this.context = context.getApplicationContext();
+        this.context = context;
     }
 
     public void skipExplicit(String id) {
@@ -71,10 +73,17 @@ public class TrackLookup {
                     public void onResponse(JSONObject response) {
                         try {
                             boolean explicit = response.getBoolean("explicit");
+                            boolean skipped = false;
                             Log.d(TAG, "Explicit: " + explicit);
                             if (explicit) {
-                                SpotifyUtil.skipTrack(context);
+                                skipped = SpotifyUtil.skipTrack(context);
                             }
+
+                            // Store track info in database
+                            Track t = new Track(response, skipped);
+                            Log.d(TAG, t.toString());
+                            DatabaseUtil db = DatabaseUtil.getInstance(context);
+                            db.addTrack(t);
                         } catch (JSONException e) {
                             Log.d(TAG, "JSONException: " + e.getMessage());
                         }
@@ -95,6 +104,7 @@ public class TrackLookup {
                 return params;
             }
         };
+        jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(5000, 4, 0));
         Log.d(TAG, jsObjRequest.toString());
         queue.add(jsObjRequest);
     }

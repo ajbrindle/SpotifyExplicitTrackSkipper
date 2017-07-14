@@ -11,35 +11,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!--ToggleButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:id="@+id/togExplicitTracks"
-            android:textOff="Off"
-            android:textOn="On"
-            android:checked="true" /-->
-
         <Switch
             android:id="@+id/swiExplicitTracks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault"
-            android:text="Skip Explicit Tracks"
-            android:gravity="center_vertical"
-            android:id="@+id/txtSkipLabel"
-            tools:textSize="24sp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentStart="true" />
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+            android:text="Skip Explicit Tracks" />
 
     </RelativeLayout>
 
+    <Button
+        android:id="@+id/btnClear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+        android:text="Clear Image Cache"
+        android:onClick="onClick" />
 
+    <TextView
+        android:id="@+id/txtListTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:text="Listening History"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/listHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/list_item" />
 </LinearLayout>

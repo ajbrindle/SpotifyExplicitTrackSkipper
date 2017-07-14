@@ -12,7 +12,10 @@ public class PreferencesUtil {
     private static Context context;
 
     public static void setContext(Context c) {
-        context = c;
+
+        if (context == null) {
+            context = c;
+        }
     }
 
     public static void addPreference(String name, String value) {

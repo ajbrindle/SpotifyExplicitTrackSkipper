@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imgAlbumArt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:background="@android:drawable/sym_def_app_icon" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingTop="5dp"
+        android:shrinkColumns="0">
+
+        <TableRow>
+            <TextView
+                android:id="@+id/txtSongTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/txtArtistAlbum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:id="@+id/txtPlayTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small" />
+        </TableRow>
+    </TableLayout>
+</LinearLayout>

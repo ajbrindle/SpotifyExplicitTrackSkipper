@@ -98,7 +98,7 @@ public class SpotifyUtil {
         queue.add(jsObjRequest);
     }
 
-    public static void skipTrack(Context context) {
+    public static boolean skipTrack(Context context) {
         boolean skip = PreferencesUtil.getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT);
 
         if (skip) {
@@ -113,6 +113,8 @@ public class SpotifyUtil {
             i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_NEXT));
             context.sendBroadcast(i);
         }
+
+        return skip;
     }
 
 }

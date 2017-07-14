@@ -18,6 +18,8 @@ public class AppConstants {
     public static final String PREFERENCE_AUTH_EXPIRY = "PREF_AUTH_EXPIRY";
 
     public static final String EXPIRY_TIME_FORMAT = "dd/MM/yyyy HH:mm";
+    public static final String PLAY_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String PLAY_TIME_DISPLAY_FORMAT = "dd/MM/yyyy HH:mm:ss";
 
     public static final String CLIENT_ID = "3b479b12ae87444c9384b1e5a14ca708";
     public static final String REDIRECT_URI = "http://www.sk7software.com/spotify/SpotifyAuthorise/token.php";
