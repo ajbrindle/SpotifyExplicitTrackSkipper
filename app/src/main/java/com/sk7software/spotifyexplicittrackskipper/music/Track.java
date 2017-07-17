@@ -1,6 +1,7 @@
 package com.sk7software.spotifyexplicittrackskipper.music;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
 
@@ -25,6 +26,8 @@ public class Track {
     private boolean explicit;
     private String imageURL;
 
+    private static final String TAG = Track.class.getSimpleName();
+
     public Track(String title, String artist, String album, String spotifyId, String imageURL, Date playTime, boolean explicit, boolean skipped) {
         this.title = title;
         this.artist = artist;
@@ -48,19 +51,22 @@ public class Track {
     }
 
 
-    public Track(JSONObject response, boolean skipped) {
+    public Track(JSONObject response) {
         try {
-            this.title = response.getString("name");
-            this.artist = response.getJSONArray("artists").getJSONObject(0).getString("name");
-            this.album = response.getJSONObject("album").getString("name");
-            this.spotifyId = response.getString("id");
+            JSONObject trackInfo =
+                    (response.has("item")
+                            ? response.getJSONObject("item")
+                            : response);
+            this.title = trackInfo.getString("name");
+            this.artist = trackInfo.getJSONArray("artists").getJSONObject(0).getString("name");
+            this.album = trackInfo.getJSONObject("album").getString("name");
+            this.spotifyId = trackInfo.getString("id");
             this.playTime = new Date();
-            this.skipped = skipped;
-            this.explicit = response.getBoolean("explicit");
-            this.imageURL = response.getJSONObject("album").getJSONArray("images").getJSONObject(1).getString("url");
+            this.explicit = trackInfo.getBoolean("explicit");
+            this.imageURL = trackInfo.getJSONObject("album").getJSONArray("images").getJSONObject(1).getString("url");
 
         } catch (JSONException je) {
-            // Do nothing
+            Log.d(TAG, "JSONException: " + je.getMessage());
         }
 
     }

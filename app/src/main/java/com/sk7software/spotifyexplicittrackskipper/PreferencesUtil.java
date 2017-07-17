@@ -42,6 +42,10 @@ public class PreferencesUtil {
         return prefs(context).getBoolean(name, false);
     }
 
+    public static void clearStringPreference(String name) {
+        PreferencesUtil.edit(context).putString(name, "").commit();
+    }
+
     private static SharedPreferences.Editor edit(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(
                 AppConstants.APP_PREFERENCES_KEY, context.MODE_PRIVATE);

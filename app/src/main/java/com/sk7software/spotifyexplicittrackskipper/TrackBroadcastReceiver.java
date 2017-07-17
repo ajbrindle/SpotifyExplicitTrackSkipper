@@ -41,6 +41,10 @@ public class TrackBroadcastReceiver extends BroadcastReceiver {
             Log.d(TAG, "Track: " + trackName + "; Artist: " + artistName + " (" + trackId + ")");
             TrackLookup t = new TrackLookup(context);
             t.skipExplicit(trackId);
+
+            // Set up keep alive
+            SpotifyKeepAlive alarm = new SpotifyKeepAlive();
+            alarm.initialise(context);
         }
     }
 }

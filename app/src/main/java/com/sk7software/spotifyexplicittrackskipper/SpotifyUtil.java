@@ -5,13 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.sk7software.spotifyexplicittrackskipper.list.ImageLoadTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +24,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by andre_000 on 06/07/2017.
@@ -94,6 +100,45 @@ public class SpotifyUtil {
                             }
                         }
                 );
+        Log.d(TAG, jsObjRequest.toString());
+        queue.add(jsObjRequest);
+    }
+
+    public static void showLoginDetails(final Context context, final TextView txt, final ImageView imgUser) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url = "https://api.spotify.com/v1/me";
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String userId = response.getString("id");
+                            String imageURL = response.getJSONArray("images").getJSONObject(0).getString("url");
+                            txt.setText(userId);
+                            new ImageLoadTask(imageURL, null, null, imgUser).execute();
+                            Log.d(TAG, "User: " + userId);
+                        } catch (JSONException e) {
+                            Log.d(TAG, "JSONException: " + e.getMessage());
+                        }
+                    }
+                },
+                        new Response.ErrorListener()
+                        {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // TODO Auto-generated method stub
+                                Log.d(TAG, "Error => " + error.toString());
+                            }
+                        }
+                ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                String token = PreferencesUtil.getStringPreference(AppConstants.PREFERENCE_AUTH_TOKEN);
+                params.put("Authorization", "Bearer " + token);
+                return params;
+            }
+        };
         Log.d(TAG, jsObjRequest.toString());
         queue.add(jsObjRequest);
     }

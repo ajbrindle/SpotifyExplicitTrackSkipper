@@ -7,14 +7,14 @@
         android:id="@+id/imgAlbumArt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="5dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingRight="8dp"
         android:background="@android:drawable/sym_def_app_icon" />
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="5dp"
-        android:paddingTop="5dp"
         android:shrinkColumns="0">
 
         <TableRow>
@@ -23,8 +23,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:ellipsize="end"
-                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
+                android:ellipsize="marquee"
+                android:scrollHorizontally="true"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
         </TableRow>
         <TableRow>
             <TextView
@@ -32,8 +33,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:ellipsize="end"
-                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+                android:ellipsize="marquee"
+                android:scrollHorizontally="true"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small" />
         </TableRow>
         <TableRow>
             <TextView
@@ -41,6 +43,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small" />
+            <TextView
+                android:id="@+id/txtSpotifyId"
+                android:layout_width="0px"
+                android:layout_height="0px"
+                android:visibility="invisible" />
         </TableRow>
     </TableLayout>
 </LinearLayout>

@@ -40,6 +40,11 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
     private static final SimpleDateFormat PLAY_TIME_FORMAT = new SimpleDateFormat(AppConstants.PLAY_TIME_DISPLAY_FORMAT);
     private static final String TAG = TrackAdapter.class.getSimpleName();
 
+    public TrackAdapter(LayoutInflater inflater) {
+        this.inflater = inflater;
+        this.selectedItems = new SparseBooleanArray();
+    }
+
     public TrackAdapter(List<Track> tracks, DatabaseUtil db, LayoutInflater inflater) {
         this.tracks = tracks;
         this.db = db;
@@ -56,6 +61,10 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
 //        }
     }
 
+    public void setDB(DatabaseUtil db) {
+        this.db = db;
+    }
+
     public void deselectTrack(String id) {
         for (int i = 0; i< tracks.size(); i++) {
             Track t = tracks.get(i);
@@ -66,6 +75,14 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
                 break;
             }
         }
+    }
+
+    public String getIdAtPosition(int position) {
+        return tracks.get(position).getSpotifyId();
+    }
+
+    public Date getPlayTimeAtPosition(int position) {
+        return tracks.get(position).getPlayTime();
     }
 
     @Override
@@ -117,11 +134,19 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         return items;
     }
 
+    public void removeItem(int position) {
+        tracks.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, tracks.size());
+        notifyDataSetChanged();
+    }
+
     public class TrackViewHolder extends RecyclerView.ViewHolder {
         final TextView title;
         final TextView artistAlbum;
         final TextView playTime;
         final ImageView albumImg;
+        final TextView id;
 
         public TrackViewHolder(View itemView) {
             super(itemView);
@@ -129,6 +154,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             artistAlbum = (TextView)itemView.findViewById(R.id.txtArtistAlbum);
             playTime = (TextView)itemView.findViewById(R.id.txtPlayTime);
             albumImg = (ImageView)itemView.findViewById(R.id.imgAlbumArt);
+            id = (TextView)itemView.findViewById(R.id.txtSpotifyId);
         }
 
         public void bindData(Track t) {
@@ -142,6 +168,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             }
             artistAlbum.setText(t.getArtist() + " / " + t.getAlbum());
             playTime.setText(PLAY_TIME_FORMAT.format(t.getPlayTime()) + (t.isSkipped() ? "  [skipped]" : ""));
+            id.setText(t.getSpotifyId());
 
             if (db.imageExists(t.getSpotifyId())) {
                 Log.d(TAG, "Image for " + t.getTitle() + " from DB");

@@ -1,21 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.sk7software.spotifyexplicittrackskipper.AuthoriseActivity">
-
-    <TextView
-        android:id="@+id/txtProgress"
+    android:layout_width="match_parent">
+    <LinearLayout
+        android:id="@+id/activity_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Started"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault" />
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        tools:context="com.sk7software.spotifyexplicittrackskipper.AuthoriseActivity">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+                android:text="Logged into Spotify as"
+                android:id="@+id/txtLoggedIn"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:id="@+id/imgUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:visibility="invisible"
+                android:layout_gravity="center_horizontal"
+                android:background="@android:drawable/sym_def_app_icon" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+                    android:id="@+id/txtUserId"
+                    android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Log Out of Spotify"
+                android:background="@android:color/holo_green_light"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginTop="15dp"
+                android:onClick="onClick"
+                android:visibility="invisible" />
+    </LinearLayout>
     <WebView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/webViewSpotify" />
-</LinearLayout>
+        android:id="@+id/webViewSpotify"
+        android:visibility="invisible" >
+    </WebView>
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Next >"
+        android:background="@android:color/holo_green_light"
+        android:onClick="onClick"
+        android:visibility="invisible" />
+</RelativeLayout>

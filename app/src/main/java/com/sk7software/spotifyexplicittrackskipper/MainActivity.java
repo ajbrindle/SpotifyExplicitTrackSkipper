@@ -1,15 +1,20 @@
 package com.sk7software.spotifyexplicittrackskipper;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +22,9 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 import com.sk7software.spotifyexplicittrackskipper.list.TrackAdapter;
 import com.sk7software.spotifyexplicittrackskipper.music.Track;
@@ -28,19 +36,19 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private RecyclerView trackView;
-    //private List<Track> tracksList;
     private GestureDetectorCompat gestureDetector;
-    private TrackAdapter trackAdapter;
 
     private Switch swiExplicit;
     private Button btnClear;
+    private TrackAdapter trackAdapter;
+    private SwipeRefreshLayout swipeRefresh;
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //this.deleteDatabase(DatabaseUtil.DATABASE_NAME);
-
+        swipeRefresh = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
 
         // Initialise context for preferences
         PreferencesUtil.setContext(getApplicationContext());
@@ -58,10 +66,37 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
 
         btnClear = (Button)findViewById(R.id.btnClear);
 
-        showHistoryList();
+        trackView = (RecyclerView)findViewById(R.id.listHistory);
         trackView.addOnItemTouchListener(this);
+        trackAdapter = new TrackAdapter(LayoutInflater.from(this));
+        showHistoryList();
+
         gestureDetector =
                 new GestureDetectorCompat(this, new TacksOnGestureListener());
+
+        swipeRefresh.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        Log.d(TAG, "onRefresh called from SwipeRefreshLayout");
+
+                        // This method performs the actual data-refresh operation.
+                        // The method calls setRefreshing(false) when it's finished.
+                        showHistoryList();
+                    }
+                }
+        );
+
+        // Initialise ads
+        MobileAds.initialize(this, AppConstants.ADMOB_APP_ID);
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("E54B1FD6DA8E4366B1A1621B72868A5B")
+                .build();
+        mAdView.loadAd(adRequest);
+
+        SpotifyKeepAlive alarm = new SpotifyKeepAlive();
+        alarm.initialise(getApplicationContext());
     }
 
     @Override
@@ -80,16 +115,18 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
     }
 
     public void showHistoryList() {
-        DatabaseUtil tracksDB = DatabaseUtil.getInstance(getApplicationContext());
-        List<Track> tracksList = tracksDB.getTracks(0);
+        TrackLookup tl = new TrackLookup(getApplicationContext());
+        tl.getTrackInfo(this, trackView, trackAdapter, swipeRefresh);
 
-        trackAdapter = new TrackAdapter(tracksList, tracksDB, LayoutInflater.from(this));
-
-        trackView = (RecyclerView)findViewById(R.id.listHistory);
-        trackView.setLayoutManager(new LinearLayoutManager(this));
-        trackView.setAdapter(trackAdapter);
-        trackAdapter.updateTracks(tracksList);
-        trackAdapter.notifyDataSetChanged();
+//        DatabaseUtil tracksDB = DatabaseUtil.getInstance(getApplicationContext());
+//
+//        trackAdapter = new TrackAdapter(tracksList, tracksDB, LayoutInflater.from(this));
+//
+//        trackView.setLayoutManager(new LinearLayoutManager(this));
+//        trackView.setAdapter(trackAdapter);
+//        trackAdapter.updateTracks(tracksList);
+//        trackAdapter.notifyDataSetChanged();
+//        swipeRefresh.setRefreshing(false);
     }
 
     private void myToggleSelection(int idx) {

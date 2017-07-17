@@ -9,14 +9,15 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp">
 
         <Switch
             android:id="@+id/swiExplicitTracks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
             android:text="Skip Explicit Tracks" />
 
     </RelativeLayout>
@@ -30,19 +31,36 @@
         android:text="Clear Image Cache"
         android:onClick="onClick" />
 
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        ads:adUnitId="ca-app-pub-9041522149264298/4422349965"
+        ads:adSize="SMART_BANNER"/>
+
     <TextView
         android:id="@+id/txtListTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
+        android:paddingLeft="10dp"
         android:gravity="center_vertical"
         android:text="Listening History"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/listHistory"
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:listitem="@layout/list_item" />
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/listHistory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            tools:listitem="@layout/list_item" >
+        </android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

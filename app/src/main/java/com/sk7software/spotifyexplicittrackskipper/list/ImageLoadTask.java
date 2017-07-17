@@ -38,8 +38,9 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
             connection.setDoInput(true);
             connection.connect();
             InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
+            Bitmap albumArt = BitmapFactory.decodeStream(input);
+            return albumArt;
+            //return scaleBitmap(0.75, albumArt);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,6 +51,17 @@ public class ImageLoadTask extends AsyncTask<Void, Void, Bitmap> {
     protected void onPostExecute(Bitmap result) {
         super.onPostExecute(result);
         imageView.setImageBitmap(result);
-        db.saveAlbumArt(id, result);
+
+        if (id != null) {
+            db.saveAlbumArt(id, result);
+        }
+    }
+
+    private Bitmap scaleBitmap(double scaleFactor, Bitmap srcBitmap) {
+        int srcWidth = srcBitmap.getWidth();
+        int srcHeight = srcBitmap.getHeight();
+        int dstWidth = (int)(srcWidth*scaleFactor);
+        int dstHeight = (int)(srcHeight*scaleFactor);
+        return Bitmap.createScaledBitmap(srcBitmap, dstWidth, dstHeight, true);
     }
 }

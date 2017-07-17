@@ -3,13 +3,14 @@
     package="com.sk7software.spotifyexplicittrackskipper">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Sanctify"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".AuthoriseActivity"
             android:label="@string/app_name">
@@ -31,8 +32,13 @@
                 <action android:name="com.spotify.music.metadatachanged" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".SpotifyKeepAlive"
+            android:enabled="true">
+        </receiver>
 
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity">
+        </activity>
     </application>
 
 </manifest>
