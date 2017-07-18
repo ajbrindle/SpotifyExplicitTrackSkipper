@@ -16,7 +16,7 @@ import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 public class PrefsActivity extends AppCompatActivity {
 
     private Spinner spiKeepAlive;
-    private EditText txtHistory;
+    private Spinner spiHistory;
     private Switch swiKeepAlive;
 
     @Override
@@ -24,15 +24,19 @@ public class PrefsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prefs);
 
-        txtHistory = (EditText)findViewById(R.id.txtHistoryMax);
-
         swiKeepAlive = (Switch)findViewById(R.id.swiKeepAlive);
 
+        spiHistory = (Spinner)findViewById(R.id.spiHistory);
+        ArrayAdapter<CharSequence> historyAdapter = ArrayAdapter.createFromResource(this,
+                R.array.history_items, android.R.layout.simple_spinner_item);
+        historyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spiHistory.setAdapter(historyAdapter);
+
         spiKeepAlive = (Spinner)findViewById(R.id.spiKeepAlive);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+        ArrayAdapter<CharSequence> aliveAdapter = ArrayAdapter.createFromResource(this,
                 R.array.keep_alive_intervals, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spiKeepAlive.setAdapter(adapter);
+        aliveAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spiKeepAlive.setAdapter(aliveAdapter);
 
         Button btnClearImages = (Button)findViewById(R.id.btnClear);
         btnClearImages.setOnClickListener(new View.OnClickListener() {
@@ -51,7 +55,7 @@ public class PrefsActivity extends AppCompatActivity {
             }
         });
 
-        initPreferences(adapter);
+        initPreferences(historyAdapter, aliveAdapter);
 
         swiKeepAlive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -61,7 +65,8 @@ public class PrefsActivity extends AppCompatActivity {
     }
 
     private void savePreferences() {
-        PreferencesUtil.addPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS, txtHistory.getText().toString());
+        int historyItems = Integer.valueOf(spiHistory.getSelectedItem().toString());
+        PreferencesUtil.addPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS, historyItems);
 
         boolean keepAlive = swiKeepAlive.isChecked();
         PreferencesUtil.addPreference(AppConstants.PREFERENCE_KEEP_ALIVE, keepAlive);
@@ -77,15 +82,21 @@ public class PrefsActivity extends AppCompatActivity {
         }
     }
 
-    private void initPreferences(ArrayAdapter adapter) {
-        txtHistory.setText(PreferencesUtil.getStringPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS));
+    private void initPreferences(ArrayAdapter historyAdapter, ArrayAdapter aliveAdapter) {
+        Integer historyItems = PreferencesUtil.getIntPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS);
+        int selectedPosition = historyAdapter.getPosition(historyItems.toString());
+        if (selectedPosition < 0) {
+            selectedPosition = 3;
+        }
+        spiHistory.setSelection(selectedPosition);
+
         swiKeepAlive.setChecked(PreferencesUtil.getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE));
         if (!swiKeepAlive.isChecked()) {
             spiKeepAlive.setEnabled(false);
         }
 
         Integer keepAliveS = PreferencesUtil.getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL);
-        int selectedPosition = adapter.getPosition(keepAliveS.toString());
+        selectedPosition = aliveAdapter.getPosition(keepAliveS.toString());
         if (selectedPosition < 0) {
             selectedPosition = 2;
         }

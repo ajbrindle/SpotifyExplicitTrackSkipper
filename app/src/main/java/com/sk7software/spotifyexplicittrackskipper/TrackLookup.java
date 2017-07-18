@@ -115,7 +115,7 @@ public class TrackLookup {
                         }
 
                         if (updateUI) {
-                            int limit = Integer.valueOf(PreferencesUtil.getStringPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS));
+                            int limit = PreferencesUtil.getIntPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS);
                             final List<Track> tracksList = db.getTracks(limit);
                             trackAdapter.updateTracks(tracksList);
                             trackAdapter.setDB(db);
