@@ -38,6 +38,10 @@ public class PreferencesUtil {
         return prefs(context).getInt(name, 0);
     }
 
+    public static void tmpDel(String name) {
+        PreferencesUtil.edit(context).remove(name).commit();
+    }
+
     public static boolean getBooleanPreference(String name) {
         return prefs(context).getBoolean(name, false);
     }

@@ -42,9 +42,11 @@ public class TrackBroadcastReceiver extends BroadcastReceiver {
             TrackLookup t = new TrackLookup(context);
             t.skipExplicit(trackId);
 
-            // Set up keep alive
-            SpotifyKeepAlive alarm = new SpotifyKeepAlive();
-            alarm.initialise(context);
+            if (PreferencesUtil.getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE)) {
+                int interval = PreferencesUtil.getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL);
+                SpotifyKeepAlive alarm = new SpotifyKeepAlive();
+                alarm.initialise(context, (interval > 0 ? interval : 90));
+            }
         }
     }
 }

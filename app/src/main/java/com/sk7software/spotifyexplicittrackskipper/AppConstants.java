@@ -16,6 +16,9 @@ public class AppConstants {
     public static final String PREFERENCE_REFRESH_TOKEN = "PREF_SPOTIFY_REFRESH_TOKEN";
     public static final String PREFERENCE_SKIP_EXPLICIT = "PREF_SKIP_EXPLICIT";
     public static final String PREFERENCE_AUTH_EXPIRY = "PREF_AUTH_EXPIRY";
+    public static final String PREFERNECE_MAX_HISTORY_ITEMS = "PREF_MAX_HISTORY";
+    public static final String PREFERENCE_KEEP_ALIVE = "PREF_KEEP_ALIVE";
+    public static final String PREFERENCE_KEEP_ALIVE_INTERVAL = "PREF_KEEP_ALIVE_INTERVAL";
 
     public static final String EXPIRY_TIME_FORMAT = "dd/MM/yyyy HH:mm";
     public static final String PLAY_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";

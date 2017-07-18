@@ -7,6 +7,13 @@
     android:orientation="vertical"
     tools:context="com.sk7software.spotifyexplicittrackskipper.AuthoriseActivity">
 
+    <TextView
+        android:text="Explicit Content Filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+        android:id="@+id/txtHeading" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,14 +29,13 @@
 
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/btnClear"
-        android:layout_width="wrap_content"
+    <TextView
+        android:text="Additional Settings"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-        android:text="Clear Image Cache"
-        android:onClick="onClick" />
+        android:onClick="onClick"
+        android:id="@+id/txtAdvanced" />
 
     <com.google.android.gms.ads.AdView
         xmlns:ads="http://schemas.android.com/apk/res-auto"

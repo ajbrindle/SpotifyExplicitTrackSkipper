@@ -47,14 +47,35 @@ public class DatabaseUtil extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(TAG, "DB onCreate()");
-        initialise(db);
+        initialise(db, 0, DATABASE_VERSION);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldv, int newv) {
         Log.d(TAG, "DB onUpgrade()");
+        initialise(db, oldv, newv);
+    }
 
-        if (oldv == 1 && newv == 2) {
+
+    private void initialise(SQLiteDatabase db, int oldv, int newv) {
+        Log.d(TAG, "DB initialise()");
+
+        if (oldv == 0) {
+            String createTable =
+                    "CREATE TABLE TRACK_HISTORY (" +
+                            "_ID INTEGER PRIMARY KEY," +
+                            "TITLE TEXT," +
+                            "ARTIST TEXT," +
+                            "ALBUM TEXT," +
+                            "IMAGE_URL TEXT," +
+                            "SPOTIFY_ID TEXT," +
+                            "PLAY_TIME TEXT," +
+                            "EXPLICIT INTEGER," +
+                            "SKIPPED INTEGER" +
+                            ");";
+            db.execSQL(createTable);
+        }
+        if (oldv <= 1 && newv == 2) {
             // Add image thumbnail table
             String createTable =
                     "CREATE TABLE IMAGE_CACHE (" +
@@ -63,24 +84,6 @@ public class DatabaseUtil extends SQLiteOpenHelper {
                             ");";
             db.execSQL(createTable);
         }
-    }
-
-
-    private void initialise(SQLiteDatabase db) {
-        Log.d(TAG, "DB initialise()");
-        String createTable =
-                "CREATE TABLE TRACK_HISTORY (" +
-                        "_ID INTEGER PRIMARY KEY," +
-                        "TITLE TEXT," +
-                        "ARTIST TEXT," +
-                        "ALBUM TEXT," +
-                        "IMAGE_URL TEXT," +
-                        "SPOTIFY_ID TEXT," +
-                        "PLAY_TIME TEXT," +
-                        "EXPLICIT INTEGER," +
-                        "SKIPPED INTEGER" +
-                        ");";
-        db.execSQL(createTable);
     }
 
     public void addTrack(Track track) {
@@ -132,7 +135,7 @@ public class DatabaseUtil extends SQLiteOpenHelper {
         try {
             cursor = db.query("TRACK_HISTORY", new String[]{"TITLE", "ARTIST", "ALBUM", "SPOTIFY_ID",
                                                             "IMAGE_URL", "PLAY_TIME", "EXPLICIT", "SKIPPED"},
-                                null, null, null, null, "_ID DESC", null);
+                                null, null, null, null, "_ID DESC", (limit > 0 ? Integer.toString(limit) : null));
             while (cursor.moveToNext()) {
                 tracks.add(new Track(cursor.getString(0), cursor.getString(1), cursor.getString(2),
                                      cursor.getString(3), cursor.getString(4), cursor.getString(5),
@@ -157,7 +160,9 @@ public class DatabaseUtil extends SQLiteOpenHelper {
                 imageExists = true;
             }
         } finally {
-            cursor.close();
+            if (cursor != null) {
+                cursor.close();
+            }
             return imageExists;
         }
     }

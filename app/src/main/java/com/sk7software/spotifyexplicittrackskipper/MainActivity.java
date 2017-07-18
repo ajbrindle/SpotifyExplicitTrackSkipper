@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -39,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
     private GestureDetectorCompat gestureDetector;
 
     private Switch swiExplicit;
-    private Button btnClear;
     private TrackAdapter trackAdapter;
     private SwipeRefreshLayout swipeRefresh;
     private AdView mAdView;
@@ -63,8 +63,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
             PreferencesUtil.addPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT, isChecked);
             }
         });
-
-        btnClear = (Button)findViewById(R.id.btnClear);
 
         trackView = (RecyclerView)findViewById(R.id.listHistory);
         trackView.addOnItemTouchListener(this);
@@ -95,8 +93,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
                 .build();
         mAdView.loadAd(adRequest);
 
-        SpotifyKeepAlive alarm = new SpotifyKeepAlive();
-        alarm.initialise(getApplicationContext());
+        if (PreferencesUtil.getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE)) {
+            int interval = PreferencesUtil.getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL);
+            SpotifyKeepAlive alarm = new SpotifyKeepAlive();
+            alarm.initialise(getApplicationContext(), (interval > 0 ? interval : 90));
+        }
     }
 
     @Override
@@ -108,9 +109,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
     @Override
     public void onClick(View view) {
         if (view == null) return;
-        if (view.getId() == R.id.btnClear) {
-            DatabaseUtil db = DatabaseUtil.getInstance(getApplicationContext());
-            db.clearImageCache();
+        if (view.getId() == R.id.txtAdvanced) {
+            Intent i = new Intent(getApplicationContext(), PrefsActivity.class);
+            startActivity(i);
         }
     }
 

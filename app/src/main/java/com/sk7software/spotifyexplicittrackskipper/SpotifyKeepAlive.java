@@ -17,7 +17,7 @@ import java.util.Date;
 public class SpotifyKeepAlive extends BroadcastReceiver
 {
     private static final String TAG = SpotifyKeepAlive.class.getSimpleName();
-    private static final long KEEP_ALIVE_INTERVAL_S = 120;
+    private static int KEEP_ALIVE_INTERVAL_S = 90;
     private static boolean alarmSet = false;
 
     @Override
@@ -31,10 +31,11 @@ public class SpotifyKeepAlive extends BroadcastReceiver
         setAlarm(context);
     }
 
-    public void initialise(Context context) {
+    public void initialise(Context context, int interval) {
         if (!alarmSet) {
             Log.d(TAG, "Initialising keep alive");
             alarmSet = true;
+            if (interval > 0) KEEP_ALIVE_INTERVAL_S = interval;
             setAlarm(context);
         }
     }

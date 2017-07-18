@@ -34,11 +34,10 @@
         </receiver>
         <receiver
             android:name=".SpotifyKeepAlive"
-            android:enabled="true">
-        </receiver>
+            android:enabled="true"></receiver>
 
-        <activity android:name=".MainActivity">
-        </activity>
+        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".PrefsActivity"></activity>
     </application>
 
 </manifest>
