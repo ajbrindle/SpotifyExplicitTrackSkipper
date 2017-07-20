@@ -5,7 +5,15 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ClipDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +21,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +65,10 @@ public class TrackLookup {
     private TrackAdapter trackAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
 
+    private static BitmapFactory.Options options;
+    private static Drawable d;
+
+
     public TrackLookup(Context context) {
         this.context = context;
     }
@@ -70,6 +83,12 @@ public class TrackLookup {
         this.trackView = trackView;
         this.trackAdapter = trackAdapter;
         this.swipeRefreshLayout = swipeRefreshLayout;
+        Resources res = mainActivity.getResources();
+        options = new BitmapFactory.Options();
+        options.inSampleSize = 8;
+        Bitmap b = BitmapFactory.decodeResource(res, R.drawable.item_delete_background, options);
+        d = new BitmapDrawable(res, b);
+
         lookupTrack(NOW_PLAYING_URI, true);
     }
 
@@ -140,6 +159,19 @@ public class TrackLookup {
                                             final int toPos = v2.getAdapterPosition();
                                             // move item in `fromPos` to `toPos` in adapter.
                                             return true;
+                                        }
+
+                                        @Override
+                                        public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                                            final ColorDrawable background = new ColorDrawable(Color.RED);
+                                            View itemView = viewHolder.itemView;
+                                            d.setBounds(0, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                                            ClipDrawable cd = new ClipDrawable(d, Gravity.LEFT, ClipDrawable.HORIZONTAL);
+                                            cd.setBounds(0, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                                            cd.setLevel((int)(dX*10000/itemView.getRight()));
+                                            cd.draw(c);
+
+                                            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                                         }
                                     });
 

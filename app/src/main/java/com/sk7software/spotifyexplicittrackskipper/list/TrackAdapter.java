@@ -2,6 +2,7 @@ package com.sk7software.spotifyexplicittrackskipper.list;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -140,6 +141,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         notifyItemRangeChanged(position, tracks.size());
         notifyDataSetChanged();
     }
+
 
     public class TrackViewHolder extends RecyclerView.ViewHolder {
         final TextView title;
