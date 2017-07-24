@@ -4,11 +4,13 @@ import android.util.Log;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sk7software.spotifyexplicittrackskipper.AppConstants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -16,11 +18,16 @@ import java.util.Date;
  */
 
 public class TrackFromJSON {
+    // From JSON
     private String name;
     private Artist[] artists;
     private Album album;
     private String id;
     private boolean explicit;
+
+    // Set by application
+    private boolean skipped;
+    private Date playDate;
 
     private static final String TAG = TrackFromJSON.class.getSimpleName();
 
@@ -40,9 +47,11 @@ public class TrackFromJSON {
                 track = mapper.readValue(trackInfo.toString(), TrackFromJSON.class);
             } catch (IOException e) {
                 Log.d(TAG, "Error parsing track info: " + e.getMessage());
+                return null;
             }
         } catch (JSONException je) {
             Log.d(TAG, "JSONException: " + je.getMessage());
+            return null;
         }
 
         return track;
@@ -86,5 +95,29 @@ public class TrackFromJSON {
 
     public void setExplicit(boolean explicit) {
         this.explicit = explicit;
+    }
+
+    public boolean isSkipped() {
+        return skipped;
+    }
+
+    public void setSkipped(boolean skipped) {
+        this.skipped = skipped;
+    }
+
+    public Date getPlayDate() {
+        return playDate;
+    }
+
+    public void setPlayDate(Date playDate) {
+        this.playDate = playDate;
+    }
+
+    public String toString() {
+        SimpleDateFormat sdf = new SimpleDateFormat(AppConstants.PLAY_TIME_FORMAT);
+        return getArtists()[0].getName() + " / " + getName() + " (" + album.getName() + ") " +
+                (getPlayDate() != null ? "Played at: " + sdf.format(getPlayDate()) : "") +
+                (isExplicit() ? " [explicit]" : "") +
+                (isSkipped() ? " [skipped]" : "");
     }
 }

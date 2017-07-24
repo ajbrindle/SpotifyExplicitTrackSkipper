@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 
 import static org.junit.Assert.*;
 
@@ -40,7 +41,7 @@ public class TrackConstructTest {
     }
 
     @Test
-    public void testTrackJSON() throws Exception {
+    public void testTrackJSON() {
         JSONObject testJSON = fetchJSON("mrbrightside.json");
         assertNotNull(testJSON);
 
@@ -54,7 +55,7 @@ public class TrackConstructTest {
     }
 
     @Test
-    public void testNowPlayingJSON() throws Exception {
+    public void testNowPlayingJSON() {
         JSONObject testJSON = fetchJSON("nowplaying.json");
         assertNotNull(testJSON);
 
@@ -67,4 +68,37 @@ public class TrackConstructTest {
         assertFalse(t.isExplicit());
     }
 
+    @Test
+    public void testToString() {
+        JSONObject testJSON = fetchJSON("nowplaying.json");
+        assertNotNull(testJSON);
+
+        TrackFromJSON t = TrackFromJSON.createFromJSON(testJSON);
+        SimpleDateFormat sdf = new SimpleDateFormat(AppConstants.PLAY_TIME_FORMAT);
+        try {
+            t.setPlayDate(sdf.parse("2017-07-24 10:03:45"));
+        } catch (Exception e) {
+        }
+        t.setExplicit(true);
+        t.setSkipped(true);
+        assertEquals("The Killers / Mr. Brightside (Hot Fuss) Played at: 2017-07-24 10:03:45 [explicit] [skipped]", t.toString());
+    }
+
+    @Test
+    public void testIncompleteToString() {
+        JSONObject testJSON = fetchJSON("nowplaying.json");
+        assertNotNull(testJSON);
+
+        TrackFromJSON t = TrackFromJSON.createFromJSON(testJSON);
+        assertEquals("The Killers / Mr. Brightside (Hot Fuss) ", t.toString());
+    }
+
+    @Test
+    public void testInvalidJSON() {
+        JSONObject testJSON = fetchJSON("invalid.json");
+        assertNotNull(testJSON);
+
+        TrackFromJSON t = TrackFromJSON.createFromJSON(testJSON);
+        assertNull(t.getAlbum().getName());
+    }
 }
