@@ -47,6 +47,15 @@ public class PrefsActivity extends AppCompatActivity {
             }
         });
 
+        Button btnClearHistory = (Button)findViewById(R.id.btnPurgeList);
+        btnClearHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatabaseUtil db = DatabaseUtil.getInstance(getApplicationContext());
+                db.deleteAllTracks();
+            }
+        });
+
         Button btnDone = (Button)findViewById(R.id.btnDone);
         btnDone.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -66,13 +75,13 @@ public class PrefsActivity extends AppCompatActivity {
 
     private void savePreferences() {
         int historyItems = Integer.valueOf(spiHistory.getSelectedItem().toString());
-        PreferencesUtil.addPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS, historyItems);
+        PreferencesUtil.getInstance().addPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS, historyItems);
 
         boolean keepAlive = swiKeepAlive.isChecked();
-        PreferencesUtil.addPreference(AppConstants.PREFERENCE_KEEP_ALIVE, keepAlive);
+        PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_KEEP_ALIVE, keepAlive);
 
         int keepAliveInterval = Integer.valueOf(spiKeepAlive.getSelectedItem().toString());
-        PreferencesUtil.addPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL, keepAliveInterval);
+        PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL, keepAliveInterval);
 
         SpotifyKeepAlive alarm = new SpotifyKeepAlive();
         alarm.cancelAlarm(getApplicationContext());
@@ -83,19 +92,19 @@ public class PrefsActivity extends AppCompatActivity {
     }
 
     private void initPreferences(ArrayAdapter historyAdapter, ArrayAdapter aliveAdapter) {
-        Integer historyItems = PreferencesUtil.getIntPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS);
+        Integer historyItems = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS);
         int selectedPosition = historyAdapter.getPosition(historyItems.toString());
         if (selectedPosition < 0) {
             selectedPosition = 3;
         }
         spiHistory.setSelection(selectedPosition);
 
-        swiKeepAlive.setChecked(PreferencesUtil.getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE));
+        swiKeepAlive.setChecked(PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE));
         if (!swiKeepAlive.isChecked()) {
             spiKeepAlive.setEnabled(false);
         }
 
-        Integer keepAliveS = PreferencesUtil.getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL);
+        Integer keepAliveS = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL);
         selectedPosition = aliveAdapter.getPosition(keepAliveS.toString());
         if (selectedPosition < 0) {
             selectedPosition = 2;

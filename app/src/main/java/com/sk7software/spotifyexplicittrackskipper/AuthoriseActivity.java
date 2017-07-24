@@ -44,7 +44,7 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
         setContentView(R.layout.activity_authorise);
 
         // Initialise context for preferences
-        PreferencesUtil.setContext(getApplicationContext());
+        PreferencesUtil.init(getApplicationContext());
 
         btnLogout = (Button)findViewById(R.id.btnLogout);
         btnNext = (Button)findViewById(R.id.btnNext);
@@ -59,16 +59,15 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
     @Override
     protected void onResume() {
         super.onResume();
-        //updateUI();
     }
 
     @Override
     public void onClick(View view) {
         if (view == null) return;
         if (view.getId() == R.id.btnLogout) {
-            PreferencesUtil.clearStringPreference(AppConstants.PREFERENCE_AUTH_TOKEN);
-            PreferencesUtil.clearStringPreference(AppConstants.PREFERENCE_REFRESH_TOKEN);
-            PreferencesUtil.clearStringPreference(AppConstants.PREFERENCE_AUTH_EXPIRY);
+            PreferencesUtil.getInstance().clearStringPreference(AppConstants.PREFERENCE_AUTH_TOKEN);
+            PreferencesUtil.getInstance().clearStringPreference(AppConstants.PREFERENCE_REFRESH_TOKEN);
+            PreferencesUtil.getInstance().clearStringPreference(AppConstants.PREFERENCE_AUTH_EXPIRY);
             finish();
         } else if (view.getId() == R.id.btnNext) {
             launchMainActivity();
@@ -87,9 +86,9 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
             Log.d(TAG, "Expires in: " + expirySeconds);
             Log.d(TAG, "Expiry time: " + expiryTime);
 
-            PreferencesUtil.addPreference(AppConstants.PREFERENCE_AUTH_TOKEN, accessToken);
-            PreferencesUtil.addPreference(AppConstants.PREFERENCE_REFRESH_TOKEN, refreshToken);
-            PreferencesUtil.addPreference(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
+            PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_TOKEN, accessToken);
+            PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_REFRESH_TOKEN, refreshToken);
+            PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
 
             launchMainActivity();
         }
@@ -140,12 +139,6 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
                 view.loadUrl("javascript:window.INTERFACE.processContent(document.getElementById('access').innerText);");
             }
         });
-//        webViewSpotify.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public void onPageFinished(WebView view, String url) {
-//                view.loadUrl("javascript:window.INTERFACE.processContent(document.getElementById('access').innerText);");
-//            }
-//        });
         webViewSpotify.loadUrl(SPOTIFY_AUTHORISATION_URL);
 
     }

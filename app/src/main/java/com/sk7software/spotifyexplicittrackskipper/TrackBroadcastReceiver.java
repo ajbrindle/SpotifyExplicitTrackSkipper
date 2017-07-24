@@ -30,7 +30,7 @@ public class TrackBroadcastReceiver extends BroadcastReceiver {
         long timeSentInMs = intent.getLongExtra("timeSent", 0L);
 
         // Ensure there is a context for preferences
-        PreferencesUtil.setContext(context);
+        PreferencesUtil.init(context);
 
         String action = intent.getAction();
 
@@ -42,8 +42,8 @@ public class TrackBroadcastReceiver extends BroadcastReceiver {
             TrackLookup t = new TrackLookup(context);
             t.skipExplicit(trackId);
 
-            if (PreferencesUtil.getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE)) {
-                int interval = PreferencesUtil.getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL);
+            if (PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE)) {
+                int interval = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL);
                 SpotifyKeepAlive alarm = new SpotifyKeepAlive();
                 alarm.initialise(context, (interval > 0 ? interval : 90));
             }

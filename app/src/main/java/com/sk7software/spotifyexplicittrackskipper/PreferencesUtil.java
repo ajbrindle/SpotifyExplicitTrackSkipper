@@ -9,56 +9,56 @@ import android.content.SharedPreferences;
 
 public class PreferencesUtil {
 
-    private static Context context;
+    private static PreferencesUtil instance;
+    private final SharedPreferences prefs;
 
-    public static void setContext(Context c) {
+    private PreferencesUtil(Context context) {
+        prefs = context.getSharedPreferences(AppConstants.APP_PREFERENCES_KEY, Context.MODE_PRIVATE);
+    }
 
-        if (context == null) {
-            context = c;
+    public synchronized static void init(Context context) {
+        if (instance == null) {
+            instance = new PreferencesUtil(context);
         }
     }
 
-    public static void addPreference(String name, String value) {
-        PreferencesUtil.edit(context).putString(name, value).commit();
+    public static PreferencesUtil getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("Preferences not initialised");
+        } else {
+            return instance;
+        }
     }
 
-    public static void addPreference(String name, int value) {
-        PreferencesUtil.edit(context).putInt(name, value).commit();
+    public void addPreference(String name, String value) {
+        prefs.edit().putString(name, value).commit();
     }
 
-    public static void addPreference(String name, boolean value) {
-        PreferencesUtil.edit(context).putBoolean(name, value).commit();
+    public void addPreference(String name, int value) {
+        prefs.edit().putInt(name, value).commit();
     }
 
-    public static String getStringPreference(String name) {
-        return prefs(context).getString(name, "");
+    public void addPreference(String name, boolean value) {
+        prefs.edit().putBoolean(name, value).commit();
     }
 
-    public static int getIntPreference(String name) {
-        return prefs(context).getInt(name, 0);
+    public String getStringPreference(String name) {
+        return prefs.getString(name, "");
     }
 
-    public static void tmpDel(String name) {
-        PreferencesUtil.edit(context).remove(name).commit();
+    public int getIntPreference(String name) {
+        return prefs.getInt(name, 0);
     }
 
-    public static boolean getBooleanPreference(String name) {
-        return prefs(context).getBoolean(name, false);
+    public void tmpDel(String name) {
+        prefs.edit().remove(name).commit();
     }
 
-    public static void clearStringPreference(String name) {
-        PreferencesUtil.edit(context).putString(name, "").commit();
+    public boolean getBooleanPreference(String name) {
+        return prefs.getBoolean(name, false);
     }
 
-    private static SharedPreferences.Editor edit(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(
-                AppConstants.APP_PREFERENCES_KEY, context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        return editor;
-    }
-
-    private static SharedPreferences prefs(Context context) {
-        return context.getSharedPreferences(
-                AppConstants.APP_PREFERENCES_KEY, context.MODE_PRIVATE);
+    public void clearStringPreference(String name) {
+        prefs.edit().putString(name, "").commit();
     }
 }

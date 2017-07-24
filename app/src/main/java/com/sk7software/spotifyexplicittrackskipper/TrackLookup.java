@@ -86,7 +86,7 @@ public class TrackLookup {
         Resources res = mainActivity.getResources();
         options = new BitmapFactory.Options();
         options.inSampleSize = 8;
-        Bitmap b = BitmapFactory.decodeResource(res, R.drawable.item_delete_background, options);
+        Bitmap b = BitmapFactory.decodeResource(res, R.drawable.ic_explicit_background, options);
         d = new BitmapDrawable(res, b);
 
         lookupTrack(NOW_PLAYING_URI, true);
@@ -134,7 +134,7 @@ public class TrackLookup {
                         }
 
                         if (updateUI) {
-                            int limit = PreferencesUtil.getIntPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS);
+                            int limit = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS);
                             final List<Track> tracksList = db.getTracks(limit);
                             trackAdapter.updateTracks(tracksList);
                             trackAdapter.setDB(db);
@@ -166,9 +166,11 @@ public class TrackLookup {
                                             final ColorDrawable background = new ColorDrawable(Color.RED);
                                             View itemView = viewHolder.itemView;
                                             d.setBounds(0, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-                                            ClipDrawable cd = new ClipDrawable(d, Gravity.LEFT, ClipDrawable.HORIZONTAL);
+
+                                            ClipDrawable cd = new ClipDrawable(d,
+                                                    (dX > 0 ? Gravity.LEFT : Gravity.RIGHT), ClipDrawable.HORIZONTAL);
+                                            cd.setLevel((int) (Math.abs(dX) * 10000 / itemView.getRight()));
                                             cd.setBounds(0, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-                                            cd.setLevel((int)(dX*10000/itemView.getRight()));
                                             cd.draw(c);
 
                                             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
@@ -189,12 +191,12 @@ public class TrackLookup {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                String token = PreferencesUtil.getStringPreference(AppConstants.PREFERENCE_AUTH_TOKEN);
+                String token = PreferencesUtil.getInstance().getStringPreference(AppConstants.PREFERENCE_AUTH_TOKEN);
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }
         };
-        jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(5000, 4, 0));
+        jsObjRequest.setRetryPolicy(new DefaultRetryPolicy(5000, 4, 1));
         queue.add(jsObjRequest);
     }
 

@@ -51,16 +51,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
         swipeRefresh = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
 
         // Initialise context for preferences
-        PreferencesUtil.setContext(getApplicationContext());
+        PreferencesUtil.init(getApplicationContext());
 
         swiExplicit = (Switch)findViewById(R.id.swiExplicitTracks);
 
-        boolean isSet = PreferencesUtil.getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT);
+        boolean isSet = PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT);
         swiExplicit.setChecked(isSet);
 
         swiExplicit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            PreferencesUtil.addPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT, isChecked);
+            PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT, isChecked);
             }
         });
 
@@ -93,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
                 .build();
         mAdView.loadAd(adRequest);
 
-        if (PreferencesUtil.getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE)) {
-            int interval = PreferencesUtil.getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL);
+        if (PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE)) {
+            int interval = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL);
             SpotifyKeepAlive alarm = new SpotifyKeepAlive();
             alarm.initialise(getApplicationContext(), (interval > 0 ? interval : 90));
         }

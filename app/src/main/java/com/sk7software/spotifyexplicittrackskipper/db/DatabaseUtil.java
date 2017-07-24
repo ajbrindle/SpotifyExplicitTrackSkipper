@@ -69,7 +69,7 @@ public class DatabaseUtil extends SQLiteOpenHelper {
                             "ALBUM TEXT," +
                             "IMAGE_URL TEXT," +
                             "SPOTIFY_ID TEXT," +
-                            "PLAY_TIME TEXT," +
+                            "PLAY_TIME INTEGER," +
                             "EXPLICIT INTEGER," +
                             "SKIPPED INTEGER" +
                             ");";
@@ -101,7 +101,7 @@ public class DatabaseUtil extends SQLiteOpenHelper {
         statement.bindString(col++, track.getAlbum());
         statement.bindString(col++, track.getSpotifyId());
         statement.bindString(col++, track.getImageURL());
-        statement.bindString(col++, PLAY_TIME_FORMAT.format(track.getPlayTime()));
+        statement.bindLong(col++, track.getPlayTime().getTime());
         statement.bindLong(col++, (track.isExplicit() ? 1 : 0));
         statement.bindLong(col++, (track.isSkipped() ? 1 : 0));
 
@@ -138,7 +138,7 @@ public class DatabaseUtil extends SQLiteOpenHelper {
                                 null, null, null, null, "_ID DESC", (limit > 0 ? Integer.toString(limit) : null));
             while (cursor.moveToNext()) {
                 tracks.add(new Track(cursor.getString(0), cursor.getString(1), cursor.getString(2),
-                                     cursor.getString(3), cursor.getString(4), cursor.getString(5),
+                                     cursor.getString(3), cursor.getString(4), cursor.getLong(5),
                                      cursor.getLong(6), cursor.getLong(7)));
             }
         } finally {
@@ -222,7 +222,7 @@ public class DatabaseUtil extends SQLiteOpenHelper {
         SQLiteStatement statement = db.compileStatement(sql);
 
         statement.bindString(1, spotifyId);
-        statement.bindString(2, PLAY_TIME_FORMAT.format(playTime));
+        statement.bindLong(2, playTime.getTime());
         long rowId = statement.executeUpdateDelete();
 
 //        statement.clearBindings();
@@ -230,6 +230,14 @@ public class DatabaseUtil extends SQLiteOpenHelper {
 //        statement = db.compileStatement(sql);
 //        statement.bindString(1, spotifyId);
 //        rowId = statement.executeUpdateDelete();
+    }
+
+    public void deleteAllTracks() {
+        String sql = "DELETE FROM TRACK_HISTORY";
+        SQLiteDatabase db = getSQLiteDatabase();
+        SQLiteStatement statement = db.compileStatement(sql);
+
+        long rowId = statement.executeUpdateDelete();
     }
 
     private SQLiteDatabase getSQLiteDatabase() {

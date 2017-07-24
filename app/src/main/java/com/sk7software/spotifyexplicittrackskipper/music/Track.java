@@ -39,13 +39,13 @@ public class Track {
         this.skipped = skipped;
     }
 
-    public Track(String title, String artist, String album, String spotifyId, String imageURL, String playTimeStr, long explicit, long skipped) {
+    public Track(String title, String artist, String album, String spotifyId, String imageURL, long playTimeMs, long explicit, long skipped) {
         this.title = title;
         this.artist = artist;
         this.album = album;
         this.spotifyId = spotifyId;
         this.imageURL = imageURL;
-        this.playTime = calcPlayTime(playTimeStr);
+        this.playTime = new Date(playTimeMs);
         this.explicit = (explicit == 0 ? false : true);
         this.skipped = (skipped == 0 ? false : true);
     }

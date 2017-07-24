@@ -40,7 +40,7 @@ public class SpotifyUtil {
     }
 
     public static boolean authExpired() {
-        String expiryTimeStr = PreferencesUtil.getStringPreference(AppConstants.PREFERENCE_AUTH_EXPIRY);
+        String expiryTimeStr = PreferencesUtil.getInstance().getStringPreference(AppConstants.PREFERENCE_AUTH_EXPIRY);
 
         if (expiryTimeStr.length() == 0) {
             return true;
@@ -60,7 +60,7 @@ public class SpotifyUtil {
     }
 
     public static boolean refreshSpotifyAuthToken(Context context, String callbackData, SpotifyCallback callback) {
-        String refreshToken = PreferencesUtil.getStringPreference(AppConstants.PREFERENCE_REFRESH_TOKEN);
+        String refreshToken = PreferencesUtil.getInstance().getStringPreference(AppConstants.PREFERENCE_REFRESH_TOKEN);
         if ("".equals(refreshToken)) {
             return false;
         } else {
@@ -83,8 +83,8 @@ public class SpotifyUtil {
                             Log.d(TAG, "Access token: " + accessToken);
                             Log.d(TAG, "Expires in: " + expirySeconds);
                             Log.d(TAG, "Expiry time: " + expiryTime);
-                            PreferencesUtil.addPreference(AppConstants.PREFERENCE_AUTH_TOKEN, accessToken);
-                            PreferencesUtil.addPreference(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
+                            PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_TOKEN, accessToken);
+                            PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
                             callback.onRequestCompleted(callbackData);
                         } catch (JSONException e) {
                             Log.d(TAG, "JSONException: " + e.getMessage());
@@ -95,7 +95,6 @@ public class SpotifyUtil {
                         {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                // TODO Auto-generated method stub
                                 Log.d(TAG, "Error => " + error.toString());
                             }
                         }
@@ -134,7 +133,7 @@ public class SpotifyUtil {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                String token = PreferencesUtil.getStringPreference(AppConstants.PREFERENCE_AUTH_TOKEN);
+                String token = PreferencesUtil.getInstance().getStringPreference(AppConstants.PREFERENCE_AUTH_TOKEN);
                 params.put("Authorization", "Bearer " + token);
                 return params;
             }
@@ -144,15 +143,16 @@ public class SpotifyUtil {
     }
 
     public static boolean skipTrack(Context context) {
-        boolean skip = PreferencesUtil.getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT);
+        boolean skip = PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT);
 
         if (skip) {
+            // Press the "next" button
             Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
             i.setComponent(new ComponentName("com.spotify.music", "com.spotify.music.internal.receiver.MediaButtonReceiver"));
             i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT));
             context.sendBroadcast(i);
 
-            //release the button
+            // Release the "next" button
             i = new Intent(Intent.ACTION_MEDIA_BUTTON);
             i.setComponent(new ComponentName("com.spotify.music", "com.spotify.music.internal.receiver.MediaButtonReceiver"));
             i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_NEXT));
@@ -161,5 +161,4 @@ public class SpotifyUtil {
 
         return skip;
     }
-
 }
