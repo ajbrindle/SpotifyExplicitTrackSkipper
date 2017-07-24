@@ -3,11 +3,14 @@ package com.sk7software.spotifyexplicittrackskipper.music;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,6 +30,8 @@ public class Track {
     private String imageURL;
 
     private static final String TAG = Track.class.getSimpleName();
+
+    public Track() {}
 
     public Track(String title, String artist, String album, String spotifyId, String imageURL, Date playTime, boolean explicit, boolean skipped) {
         this.title = title;
@@ -68,8 +73,8 @@ public class Track {
         } catch (JSONException je) {
             Log.d(TAG, "JSONException: " + je.getMessage());
         }
-
     }
+
 
     private Date calcPlayTime(String playTimeStr) {
         try {

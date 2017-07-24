@@ -96,9 +96,9 @@ public class TrackLookup {
         // Check whether authorisation has expired
         if (SpotifyUtil.authExpired()) {
             Toast.makeText(context, "Spotify authorisation has expired", Toast.LENGTH_SHORT);
-            SpotifyUtil.refreshSpotifyAuthToken(context, id, new SpotifyUtil.SpotifyCallback() {
+            SpotifyUtil.refreshSpotifyAuthToken(context, new SpotifyUtil.SpotifyCallback() {
                 @Override
-                public void onRequestCompleted(String callbackData) {
+                public void onRequestCompleted(Map<String, String> callbackData) {
                     fetchTrackInfo(context, id, updateUI);
                 }
             });

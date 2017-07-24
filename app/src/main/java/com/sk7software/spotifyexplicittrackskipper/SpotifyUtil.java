@@ -16,6 +16,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.sk7software.spotifyexplicittrackskipper.list.ImageLoadTask;
+import com.spotify.sdk.android.player.Spotify;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +37,7 @@ public class SpotifyUtil {
     private static final String TAG = SpotifyUtil.class.getSimpleName();
 
     public interface SpotifyCallback {
-        public void onRequestCompleted(String callbackData);
+        public void onRequestCompleted(Map<String, String>callbackData);
     }
 
     public static boolean authExpired() {
@@ -59,17 +60,17 @@ public class SpotifyUtil {
         return false;
     }
 
-    public static boolean refreshSpotifyAuthToken(Context context, String callbackData, SpotifyCallback callback) {
+    public static boolean refreshSpotifyAuthToken(Context context, SpotifyCallback callback) {
         String refreshToken = PreferencesUtil.getInstance().getStringPreference(AppConstants.PREFERENCE_REFRESH_TOKEN);
         if ("".equals(refreshToken)) {
             return false;
         } else {
-            getNewAccessToken(context, refreshToken, callbackData, callback);
+            getNewAccessToken(context, refreshToken, callback);
             return true;
         }
     }
 
-    private static void getNewAccessToken(final Context context, final String refreshToken, final String callbackData, final SpotifyCallback callback) {
+    private static void getNewAccessToken(final Context context, final String refreshToken, final SpotifyCallback callback) {
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = "http://www.sk7software.com/spotify/SpotifyAuthorise/refresh.php?refreshToken=" + refreshToken;
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -85,7 +86,7 @@ public class SpotifyUtil {
                             Log.d(TAG, "Expiry time: " + expiryTime);
                             PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_TOKEN, accessToken);
                             PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
-                            callback.onRequestCompleted(callbackData);
+                            callback.onRequestCompleted(null);
                         } catch (JSONException e) {
                             Log.d(TAG, "JSONException: " + e.getMessage());
                         }
@@ -103,7 +104,7 @@ public class SpotifyUtil {
         queue.add(jsObjRequest);
     }
 
-    public static void showLoginDetails(final Context context, final TextView txt, final ImageView imgUser) {
+    public static void showLoginDetails(final Context context, final SpotifyCallback callback) { //final TextView txt, final ImageView imgUser) {
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = "https://api.spotify.com/v1/me";
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -113,8 +114,10 @@ public class SpotifyUtil {
                         try {
                             String userId = response.getString("id");
                             String imageURL = response.getJSONArray("images").getJSONObject(0).getString("url");
-                            txt.setText(userId);
-                            new ImageLoadTask(imageURL, null, null, imgUser).execute();
+                            Map<String, String> callbackData = new HashMap<>();
+                            callbackData.put("userId", userId);
+                            callbackData.put("imageURL", imageURL);
+                            callback.onRequestCompleted(callbackData);
                             Log.d(TAG, "User: " + userId);
                         } catch (JSONException e) {
                             Log.d(TAG, "JSONException: " + e.getMessage());

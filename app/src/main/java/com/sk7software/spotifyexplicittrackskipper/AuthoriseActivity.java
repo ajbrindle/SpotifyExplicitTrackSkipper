@@ -15,9 +15,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
+import com.sk7software.spotifyexplicittrackskipper.list.ImageLoadTask;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Map;
 
 public class AuthoriseActivity extends Activity implements View.OnClickListener  {
 
@@ -97,9 +99,9 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
     private void authenticate() {
         if (SpotifyUtil.authExpired()) {
             // Determine if there is a refresh token
-            if (!SpotifyUtil.refreshSpotifyAuthToken(getApplicationContext(), null, new SpotifyUtil.SpotifyCallback() {
+            if (!SpotifyUtil.refreshSpotifyAuthToken(getApplicationContext(), new SpotifyUtil.SpotifyCallback() {
                 @Override
-                public void onRequestCompleted(String callbackData) {
+                public void onRequestCompleted(Map<String, String> callbackData) {
                     launchMainActivity();
                 }
             })) {
@@ -157,9 +159,15 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
             public void run() {
                 // Show logged in details in text field
                 TextView txtLoggedIn = (TextView)findViewById(R.id.txtLoggedIn);
-                TextView txtUserId = (TextView)findViewById(R.id.txtUserId);
-                ImageView imgUser = (ImageView)findViewById(R.id.imgUser);
-                SpotifyUtil.showLoginDetails(getApplicationContext(), txtUserId, imgUser);
+                final TextView txtUserId = (TextView)findViewById(R.id.txtUserId);
+                final ImageView imgUser = (ImageView)findViewById(R.id.imgUser);
+                SpotifyUtil.showLoginDetails(getApplicationContext(), new SpotifyUtil.SpotifyCallback() {
+                    @Override
+                    public void onRequestCompleted(Map<String, String> callbackData) {
+                        txtUserId.setText(callbackData.get("userId").toString());
+                        new ImageLoadTask(callbackData.get("imageURL").toString(), null, null, imgUser).execute();
+                    }
+                });
                 btnLogout.setVisibility(View.VISIBLE);
                 btnNext.setVisibility(View.VISIBLE);
                 txtLoggedIn.setVisibility(View.VISIBLE);
