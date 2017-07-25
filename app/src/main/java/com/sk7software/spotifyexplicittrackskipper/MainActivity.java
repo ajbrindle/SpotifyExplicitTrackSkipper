@@ -26,11 +26,7 @@ import android.widget.TextView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 import com.sk7software.spotifyexplicittrackskipper.list.TrackAdapter;
-import com.sk7software.spotifyexplicittrackskipper.music.Track;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RecyclerView.OnItemTouchListener, View.OnClickListener {
 

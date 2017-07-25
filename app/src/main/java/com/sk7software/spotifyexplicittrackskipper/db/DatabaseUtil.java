@@ -13,7 +13,6 @@ import com.sk7software.spotifyexplicittrackskipper.AppConstants;
 import com.sk7software.spotifyexplicittrackskipper.music.Track;
 
 import java.io.ByteArrayOutputStream;
-import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,11 +26,12 @@ public class DatabaseUtil extends SQLiteOpenHelper {
     private static final SimpleDateFormat PLAY_TIME_FORMAT = new SimpleDateFormat(AppConstants.PLAY_TIME_FORMAT);
     private static DatabaseUtil dbInstance;
 
-    private Context context;
+    private SQLiteDatabase database;
 
     public static DatabaseUtil getInstance(Context context) {
         if (dbInstance == null) {
             dbInstance = new DatabaseUtil(context);
+            dbInstance.database = dbInstance.getSQLiteDatabase(context);
         }
 
         return dbInstance;
@@ -39,7 +39,6 @@ public class DatabaseUtil extends SQLiteOpenHelper {
 
     private DatabaseUtil(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context;
         Log.d(TAG, "DB constructor");
     }
 
@@ -56,6 +55,12 @@ public class DatabaseUtil extends SQLiteOpenHelper {
         initialise(db, oldv, newv);
     }
 
+    @Override
+    public void close() {
+        super.close();
+        dbInstance = null;
+        Log.d(TAG, "DB close()");
+    }
 
     private void initialise(SQLiteDatabase db, int oldv, int newv) {
         Log.d(TAG, "DB initialise()");
@@ -90,18 +95,17 @@ public class DatabaseUtil extends SQLiteOpenHelper {
         String sql = "INSERT INTO TRACK_HISTORY " +
                 "(title, artist, album, spotify_id, image_url, play_time, explicit, skipped) " +
                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?);";
-        SQLiteDatabase db = getSQLiteDatabase();
-        SQLiteStatement statement = db.compileStatement(sql);
+        SQLiteStatement statement = database.compileStatement(sql);
 
         String playTime = PLAY_TIME_FORMAT.format(new Date());
 
         int col = 1;
-        statement.bindString(col++, track.getTitle());
-        statement.bindString(col++, track.getArtist());
-        statement.bindString(col++, track.getAlbum());
-        statement.bindString(col++, track.getSpotifyId());
-        statement.bindString(col++, track.getImageURL());
-        statement.bindLong(col++, track.getPlayTime().getTime());
+        statement.bindString(col++, track.getName());
+        statement.bindString(col++, track.getArtistName());
+        statement.bindString(col++, track.getAlbumName());
+        statement.bindString(col++, track.getId());
+        statement.bindString(col++, track.getAlbumArt());
+        statement.bindLong(col++, track.getPlayDate().getTime());
         statement.bindLong(col++, (track.isExplicit() ? 1 : 0));
         statement.bindLong(col++, (track.isSkipped() ? 1 : 0));
 
@@ -111,10 +115,9 @@ public class DatabaseUtil extends SQLiteOpenHelper {
     public String getLatestTrackId() {
         Cursor cursor = null;
         String trackId = "";
-        SQLiteDatabase db = getSQLiteDatabase();
 
         try {
-            cursor = db.query("TRACK_HISTORY", new String[]{"SPOTIFY_ID"},
+            cursor = database.query("TRACK_HISTORY", new String[]{"SPOTIFY_ID"},
                     null, null, null, null, "_ID DESC", null);
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -130,10 +133,9 @@ public class DatabaseUtil extends SQLiteOpenHelper {
     public List<Track> getTracks(int limit) {
         Cursor cursor = null;
         List<Track> tracks = new ArrayList<>();
-        SQLiteDatabase db = getSQLiteDatabase();
 
         try {
-            cursor = db.query("TRACK_HISTORY", new String[]{"TITLE", "ARTIST", "ALBUM", "SPOTIFY_ID",
+            cursor = database.query("TRACK_HISTORY", new String[]{"TITLE", "ARTIST", "ALBUM", "SPOTIFY_ID",
                                                             "IMAGE_URL", "PLAY_TIME", "EXPLICIT", "SKIPPED"},
                                 null, null, null, null, "_ID DESC", (limit > 0 ? Integer.toString(limit) : null));
             while (cursor.moveToNext()) {
@@ -150,11 +152,10 @@ public class DatabaseUtil extends SQLiteOpenHelper {
 
     public boolean imageExists(String id) {
         Cursor cursor = null;
-        SQLiteDatabase db = getSQLiteDatabase();
         boolean imageExists = false;
 
         try {
-            cursor = db.query("IMAGE_CACHE", new String[]{"SPOTIFY_ID"},
+            cursor = database.query("IMAGE_CACHE", new String[]{"SPOTIFY_ID"},
                     "SPOTIFY_ID=?", new String[] {String.valueOf(id)}, null, null, null, null);
             if (cursor.getCount() > 0) {
                 imageExists = true;
@@ -174,8 +175,7 @@ public class DatabaseUtil extends SQLiteOpenHelper {
         String sql = "INSERT INTO IMAGE_CACHE " +
                 "(spotify_id, image_data) " +
                 "VALUES(?, ?);";
-        SQLiteDatabase db = getSQLiteDatabase();
-        SQLiteStatement statement = db.compileStatement(sql);
+        SQLiteStatement statement = database.compileStatement(sql);
 
         // Convert image to byte array
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -193,10 +193,9 @@ public class DatabaseUtil extends SQLiteOpenHelper {
         Cursor cursor = null;
         byte[] imgBytes = null;
         Bitmap image = null;
-        SQLiteDatabase db = getSQLiteDatabase();
 
         try {
-            cursor = db.query("IMAGE_CACHE", new String[]{"SPOTIFY_ID", "IMAGE_DATA"},
+            cursor = database.query("IMAGE_CACHE", new String[]{"SPOTIFY_ID", "IMAGE_DATA"},
                     "SPOTIFY_ID=?", new String[] {String.valueOf(id)}, null, null, null, null);
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
@@ -211,37 +210,32 @@ public class DatabaseUtil extends SQLiteOpenHelper {
     }
 
     public void clearImageCache() {
-        String sql = "DELETE FROM IMAGE_CACHE;";
-        SQLiteDatabase db = getSQLiteDatabase();
-        db.execSQL(sql);
+        String sql = "DELETE FROM IMAGE_CACHE";
+        database.execSQL(sql);
     }
 
     public void deleteTrack(String spotifyId, Date playTime) {
         String sql = "DELETE FROM TRACK_HISTORY WHERE SPOTIFY_ID = ? AND PLAY_TIME = ?";
-        SQLiteDatabase db = getSQLiteDatabase();
-        SQLiteStatement statement = db.compileStatement(sql);
+        SQLiteStatement statement = database.compileStatement(sql);
 
         statement.bindString(1, spotifyId);
         statement.bindLong(2, playTime.getTime());
         long rowId = statement.executeUpdateDelete();
-
-//        statement.clearBindings();
-//        sql = "DELETE FROM IMAGE_CACHE WHERE SPOTIFY_ID = ?";
-//        statement = db.compileStatement(sql);
-//        statement.bindString(1, spotifyId);
-//        rowId = statement.executeUpdateDelete();
     }
 
     public void deleteAllTracks() {
         String sql = "DELETE FROM TRACK_HISTORY";
-        SQLiteDatabase db = getSQLiteDatabase();
-        SQLiteStatement statement = db.compileStatement(sql);
+        SQLiteStatement statement = database.compileStatement(sql);
 
         long rowId = statement.executeUpdateDelete();
     }
 
-    private SQLiteDatabase getSQLiteDatabase() {
+    private SQLiteDatabase getSQLiteDatabase(Context context) {
         return getInstance(context).getWritableDatabase();
+    }
+
+    public SQLiteDatabase getDatabase() {
+        return database;
     }
 
 }

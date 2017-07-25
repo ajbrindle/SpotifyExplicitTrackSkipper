@@ -20,6 +20,9 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+    packagingOptions {
+        pickFirst 'META-INF/LICENSE'
+    }
 }
 
 repositories {
@@ -31,13 +34,14 @@ repositories {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    // This library handles authentication and authorization
+
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile 'junit:junit:4.12'
     testCompile 'org.json:json:20160810'
-    // This library handles music playback
+    testCompile 'org.robolectric:robolectric:3.3.2'
+
     compile 'com.spotify.sdk:spotify-auth:1.0.0-beta13@aar'
     compile 'com.spotify.sdk:spotify-player:1.0.0-beta13@aar'
     compile 'com.android.support:appcompat-v7:25.3.1'

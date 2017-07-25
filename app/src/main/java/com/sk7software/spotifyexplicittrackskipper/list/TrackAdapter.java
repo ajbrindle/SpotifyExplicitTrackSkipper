@@ -1,18 +1,13 @@
 package com.sk7software.spotifyexplicittrackskipper.list;
 
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
@@ -24,8 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static android.text.TextUtils.isEmpty;
 
 /**
  * Created by andre_000 on 13/07/2017.
@@ -69,7 +62,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
     public void deselectTrack(String id) {
         for (int i = 0; i< tracks.size(); i++) {
             Track t = tracks.get(i);
-            if (id.equals(t.getSpotifyId())) {
+            if (id.equals(t.getId())) {
                 // Deselect this item
                 selectedItems.delete(i);
                 notifyItemChanged(i);
@@ -79,11 +72,11 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
     }
 
     public String getIdAtPosition(int position) {
-        return tracks.get(position).getSpotifyId();
+        return tracks.get(position).getId();
     }
 
     public Date getPlayTimeAtPosition(int position) {
-        return tracks.get(position).getPlayTime();
+        return tracks.get(position).getPlayDate();
     }
 
     @Override
@@ -160,7 +153,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         }
 
         public void bindData(Track t) {
-            title.setText(t.getTitle());
+            title.setText(t.getName());
             if (t.isExplicit()) {
                 // Set explicit tracks to red
                 title.setTextColor(Color.RED);
@@ -168,16 +161,16 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
                 // Use default colour of another text field (that won't have been changed)
                 title.setTextColor(playTime.getTextColors().getDefaultColor());
             }
-            artistAlbum.setText(t.getArtist() + " / " + t.getAlbum());
-            playTime.setText(PLAY_TIME_FORMAT.format(t.getPlayTime()) + (t.isSkipped() ? "  [skipped]" : ""));
-            id.setText(t.getSpotifyId());
+            artistAlbum.setText(t.getArtistName() + " / " + t.getAlbumName());
+            playTime.setText(PLAY_TIME_FORMAT.format(t.getPlayDate()) + (t.isSkipped() ? "  [skipped]" : ""));
+            id.setText(t.getId());
 
-            if (db.imageExists(t.getSpotifyId())) {
-                Log.d(TAG, "Image for " + t.getTitle() + " from DB");
-                albumImg.setImageBitmap(db.retrieveAlbumArt(t.getSpotifyId()));
+            if (db.imageExists(t.getId())) {
+                Log.d(TAG, "Image for " + t.getName() + " from DB");
+                albumImg.setImageBitmap(db.retrieveAlbumArt(t.getId()));
             } else {
-                Log.d(TAG, "Image for " + t.getTitle() + " from URL");
-                new ImageLoadTask(t.getImageURL(), t.getSpotifyId(), db, albumImg).execute();
+                Log.d(TAG, "Image for " + t.getName() + " from URL");
+                new ImageLoadTask(t.getAlbumArt(), t.getId(), db, albumImg).execute();
             }
         }
     }

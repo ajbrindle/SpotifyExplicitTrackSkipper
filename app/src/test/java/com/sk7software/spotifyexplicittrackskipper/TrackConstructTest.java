@@ -1,6 +1,6 @@
 package com.sk7software.spotifyexplicittrackskipper;
 
-import com.sk7software.spotifyexplicittrackskipper.music.TrackFromJSON;
+import com.sk7software.spotifyexplicittrackskipper.music.Track;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +45,7 @@ public class TrackConstructTest {
         JSONObject testJSON = fetchJSON("mrbrightside.json");
         assertNotNull(testJSON);
 
-        TrackFromJSON t = TrackFromJSON.createFromJSON(testJSON);
+        Track t = Track.createFromJSON(testJSON);
         assertEquals("Mr. Brightside", t.getName());
         assertEquals("Hot Fuss (Deluxe Version)", t.getAlbum().getName());
         assertEquals("The Killers", t.getArtists()[0].getName());
@@ -59,7 +59,7 @@ public class TrackConstructTest {
         JSONObject testJSON = fetchJSON("nowplaying.json");
         assertNotNull(testJSON);
 
-        TrackFromJSON t = TrackFromJSON.createFromJSON(testJSON);
+        Track t = Track.createFromJSON(testJSON);
         assertEquals("Mr. Brightside", t.getName());
         assertEquals("Hot Fuss", t.getAlbum().getName());
         assertEquals("The Killers", t.getArtists()[0].getName());
@@ -73,7 +73,7 @@ public class TrackConstructTest {
         JSONObject testJSON = fetchJSON("nowplaying.json");
         assertNotNull(testJSON);
 
-        TrackFromJSON t = TrackFromJSON.createFromJSON(testJSON);
+        Track t = Track.createFromJSON(testJSON);
         SimpleDateFormat sdf = new SimpleDateFormat(AppConstants.PLAY_TIME_FORMAT);
         try {
             t.setPlayDate(sdf.parse("2017-07-24 10:03:45"));
@@ -89,7 +89,7 @@ public class TrackConstructTest {
         JSONObject testJSON = fetchJSON("nowplaying.json");
         assertNotNull(testJSON);
 
-        TrackFromJSON t = TrackFromJSON.createFromJSON(testJSON);
+        Track t = Track.createFromJSON(testJSON);
         assertEquals("The Killers / Mr. Brightside (Hot Fuss) ", t.toString());
     }
 
@@ -98,7 +98,7 @@ public class TrackConstructTest {
         JSONObject testJSON = fetchJSON("invalid.json");
         assertNotNull(testJSON);
 
-        TrackFromJSON t = TrackFromJSON.createFromJSON(testJSON);
+        Track t = Track.createFromJSON(testJSON);
         assertNull(t.getAlbum().getName());
     }
 }

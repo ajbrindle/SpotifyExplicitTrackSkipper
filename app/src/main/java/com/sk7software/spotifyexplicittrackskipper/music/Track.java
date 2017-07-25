@@ -1,6 +1,5 @@
 package com.sk7software.spotifyexplicittrackskipper.music;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -10,131 +9,102 @@ import com.sk7software.spotifyexplicittrackskipper.AppConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by andre_000 on 13/07/2017.
+ * Created by andre_000 on 24/07/2017.
  */
 
 public class Track {
-    private String title;
-    private String artist;
-    private String album;
-    private String spotifyId;
-    private Date playTime;
-    private boolean skipped;
+    // From JSON
+    private String name;
+    private Artist[] artists;
+    private Album album;
+    private String id;
     private boolean explicit;
-    private String imageURL;
+
+    // Set by application
+    private boolean skipped;
+    private Date playDate;
 
     private static final String TAG = Track.class.getSimpleName();
 
     public Track() {}
 
-    public Track(String title, String artist, String album, String spotifyId, String imageURL, Date playTime, boolean explicit, boolean skipped) {
-        this.title = title;
-        this.artist = artist;
-        this.album = album;
-        this.spotifyId = spotifyId;
-        this.imageURL = imageURL;
-        this.playTime = playTime;
-        this.explicit = explicit;
-        this.skipped = skipped;
-    }
+    public Track(String name, String artist, String album, String id, String imageURL, long playTimeMs, long explicit, long skipped) {
+        this.name = name;
+        this.artists = new Artist[1];
+        this.artists[0] = new Artist();
+        this.artists[0].setName(artist);
+        this.album = new Album();
+        this.album.setName(album);
+        this.id = id;
 
-    public Track(String title, String artist, String album, String spotifyId, String imageURL, long playTimeMs, long explicit, long skipped) {
-        this.title = title;
-        this.artist = artist;
-        this.album = album;
-        this.spotifyId = spotifyId;
-        this.imageURL = imageURL;
-        this.playTime = new Date(playTimeMs);
+        AlbumArt[] img = new AlbumArt[1];
+        img[0] = new AlbumArt();
+        img[0].setUrl(imageURL);
+        this.album.setImages(img);
+
+        this.playDate = new Date(playTimeMs);
         this.explicit = (explicit == 0 ? false : true);
         this.skipped = (skipped == 0 ? false : true);
     }
 
-
-    public Track(JSONObject response) {
+    public static Track createFromJSON(JSONObject response) {
+        Track track = new Track();
         try {
             JSONObject trackInfo =
                     (response.has("item")
                             ? response.getJSONObject("item")
                             : response);
-            this.title = trackInfo.getString("name");
-            this.artist = trackInfo.getJSONArray("artists").getJSONObject(0).getString("name");
-            this.album = trackInfo.getJSONObject("album").getString("name");
-            this.spotifyId = trackInfo.getString("id");
-            this.playTime = new Date();
-            this.explicit = trackInfo.getBoolean("explicit");
-            this.imageURL = trackInfo.getJSONObject("album").getJSONArray("images").getJSONObject(1).getString("url");
 
+            ObjectMapper mapper = new ObjectMapper()
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            try {
+                track = mapper.readValue(trackInfo.toString(), Track.class);
+            } catch (Exception e) {
+                Log.d(TAG, "Error parsing track info: " + e.getMessage());
+                return null;
+            }
         } catch (JSONException je) {
             Log.d(TAG, "JSONException: " + je.getMessage());
+            return null;
         }
+
+        return track;
     }
 
-
-    private Date calcPlayTime(String playTimeStr) {
-        try {
-            return new SimpleDateFormat(AppConstants.PLAY_TIME_FORMAT).parse(playTimeStr);
-        } catch (ParseException pe) {
-            return new Date();
-        }
+    public String getName() {
+        return name;
     }
 
-    public String getTitle() {
-
-        return title;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getSpotifyId() {
-        return spotifyId;
+    public Artist[] getArtists() {
+        return artists;
     }
 
-    public void setSpotifyId(String spotifyId) {
-        this.spotifyId = spotifyId;
+    public void setArtists(Artist[] artists) {
+        this.artists = artists;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
-    public String getAlbum() {
+    public Album getAlbum() {
         return album;
     }
 
-    public void setAlbum(String album) {
+    public void setAlbum(Album album) {
         this.album = album;
     }
 
-    public Date getPlayTime() {
-        return playTime;
+    public String getId() {
+        return id;
     }
 
-    public void setPlayTime(Date playTime) {
-        this.playTime = playTime;
-    }
-
-    public boolean isSkipped() {
-        return skipped;
-    }
-
-    public String getImageURL() { return imageURL; }
-
-    public void setImageURL(String imageURL) { this.imageURL = imageURL; }
-
-    public void setSkipped(boolean skipped) {
-        this.skipped = skipped;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public boolean isExplicit() {
@@ -145,10 +115,48 @@ public class Track {
         this.explicit = explicit;
     }
 
+    public boolean isSkipped() {
+        return skipped;
+    }
+
+    public void setSkipped(boolean skipped) {
+        this.skipped = skipped;
+    }
+
+    public Date getPlayDate() {
+        return playDate;
+    }
+
+    public void setPlayDate(Date playDate) {
+        this.playDate = playDate;
+    }
+
+    public String getArtistName() {
+        if (artists.length > 0) {
+            return artists[0].getName();
+        } else {
+            throw new IllegalStateException("Artist not defined");
+        }
+    }
+
+    public String getAlbumName() {
+        return album.getName();
+    }
+
+    public String getAlbumArt() {
+        if (album.getImages().length == 1) {
+            return album.getImages()[0].getUrl();
+        } else if (album.getImages().length > 1) {
+            return album.getImages()[1].getUrl();
+        } else {
+            throw new IllegalStateException("Album artwork not defined");
+        }
+    }
+
     public String toString() {
         SimpleDateFormat sdf = new SimpleDateFormat(AppConstants.PLAY_TIME_FORMAT);
-        return artist + " / " + title + " (" + album + ") " +
-                "Played at: " + sdf.format(playTime) +
+        return getArtists()[0].getName() + " / " + getName() + " (" + album.getName() + ") " +
+                (getPlayDate() != null ? "Played at: " + sdf.format(getPlayDate()) : "") +
                 (isExplicit() ? " [explicit]" : "") +
                 (isSkipped() ? " [skipped]" : "");
     }

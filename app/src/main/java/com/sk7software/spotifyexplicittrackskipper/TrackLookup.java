@@ -1,10 +1,7 @@
 package com.sk7software.spotifyexplicittrackskipper;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,16 +11,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.provider.ContactsContract;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -33,16 +26,15 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 import com.sk7software.spotifyexplicittrackskipper.list.TrackAdapter;
 import com.sk7software.spotifyexplicittrackskipper.music.Track;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,7 +105,7 @@ public class TrackLookup {
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Track t = new Track(response);
+                        Track t = Track.createFromJSON(response);
 
                         boolean skipped = false;
                         Log.d(TAG, "Explicit: " + t.isExplicit());
@@ -126,9 +118,10 @@ public class TrackLookup {
 
                         // Check if this is the same as the most recent track in the list
                         String latestTrack = db.getLatestTrackId();
-                        String nowPlaying = setId(t.getSpotifyId());
+                        String nowPlaying = setId(t.getId());
                         if (!nowPlaying.equals(latestTrack)) {
                             // Store track info in database
+                            t.setPlayDate(new Date());
                             Log.d(TAG, t.toString());
                             db.addTrack(t);
                         }
