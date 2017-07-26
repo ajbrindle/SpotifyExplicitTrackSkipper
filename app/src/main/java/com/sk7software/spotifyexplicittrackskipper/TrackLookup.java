@@ -29,7 +29,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
-import com.sk7software.spotifyexplicittrackskipper.list.TrackAdapter;
+import com.sk7software.spotifyexplicittrackskipper.ui.TrackAdapter;
 import com.sk7software.spotifyexplicittrackskipper.music.Track;
 
 import org.json.JSONObject;
@@ -42,6 +42,9 @@ import java.util.Map;
 /**
  * Created by Andrew on 18/06/2017.
  */
+
+
+// TODO - separate the UI and network elements into separate classes
 
 public class TrackLookup {
 

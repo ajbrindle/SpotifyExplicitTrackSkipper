@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerInParent="true"
-        tools:context="com.sk7software.spotifyexplicittrackskipper.AuthoriseActivity">
+        tools:context="com.sk7software.spotifyexplicittrackskipper.ui.AuthoriseActivity">
 
             <TextView
                 android:layout_width="wrap_content"

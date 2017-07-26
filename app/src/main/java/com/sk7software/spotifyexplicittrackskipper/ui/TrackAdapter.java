@@ -1,8 +1,7 @@
-package com.sk7software.spotifyexplicittrackskipper.list;
+package com.sk7software.spotifyexplicittrackskipper.ui;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -166,10 +165,10 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             id.setText(t.getId());
 
             if (db.imageExists(t.getId())) {
-                Log.d(TAG, "Image for " + t.getName() + " from DB");
+                // Load image from database
                 albumImg.setImageBitmap(db.retrieveAlbumArt(t.getId()));
             } else {
-                Log.d(TAG, "Image for " + t.getName() + " from URL");
+                // Load image from URL
                 new ImageLoadTask(t.getAlbumArt(), t.getId(), db, albumImg).execute();
             }
         }

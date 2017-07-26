@@ -1,4 +1,4 @@
-package com.sk7software.spotifyexplicittrackskipper;
+package com.sk7software.spotifyexplicittrackskipper.ui;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -14,8 +14,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
-import com.sk7software.spotifyexplicittrackskipper.list.ImageLoadTask;
+import com.sk7software.spotifyexplicittrackskipper.AppConstants;
+import com.sk7software.spotifyexplicittrackskipper.PreferencesUtil;
+import com.sk7software.spotifyexplicittrackskipper.R;
+import com.sk7software.spotifyexplicittrackskipper.SpotifyUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -161,6 +163,7 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
                 TextView txtLoggedIn = (TextView)findViewById(R.id.txtLoggedIn);
                 final TextView txtUserId = (TextView)findViewById(R.id.txtUserId);
                 final ImageView imgUser = (ImageView)findViewById(R.id.imgUser);
+
                 SpotifyUtil.showLoginDetails(getApplicationContext(), new SpotifyUtil.SpotifyCallback() {
                     @Override
                     public void onRequestCompleted(Map<String, String> callbackData) {

@@ -50,8 +50,12 @@ public class PreferencesUtil {
         return prefs.getInt(name, 0);
     }
 
-    public void tmpDel(String name) {
-        prefs.edit().remove(name).commit();
+    public void clearAllPreferences() {
+        prefs.edit().clear().commit();
+    }
+
+    public static void reset() {
+        instance = null;
     }
 
     public boolean getBooleanPreference(String name) {

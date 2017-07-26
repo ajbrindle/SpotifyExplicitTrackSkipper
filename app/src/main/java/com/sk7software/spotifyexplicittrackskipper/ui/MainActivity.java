@@ -1,32 +1,27 @@
-package com.sk7software.spotifyexplicittrackskipper;
+package com.sk7software.spotifyexplicittrackskipper.ui;
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.sk7software.spotifyexplicittrackskipper.list.TrackAdapter;
+import com.sk7software.spotifyexplicittrackskipper.AppConstants;
+import com.sk7software.spotifyexplicittrackskipper.PreferencesUtil;
+import com.sk7software.spotifyexplicittrackskipper.R;
+import com.sk7software.spotifyexplicittrackskipper.SpotifyKeepAlive;
+import com.sk7software.spotifyexplicittrackskipper.TrackLookup;
 
 public class MainActivity extends AppCompatActivity implements RecyclerView.OnItemTouchListener, View.OnClickListener {
 
