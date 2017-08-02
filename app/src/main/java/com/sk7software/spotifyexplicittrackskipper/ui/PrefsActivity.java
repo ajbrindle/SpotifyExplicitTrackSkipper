@@ -6,13 +6,11 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
-import com.sk7software.spotifyexplicittrackskipper.PreferencesUtil;
+import com.sk7software.spotifyexplicittrackskipper.util.PreferencesUtil;
 import com.sk7software.spotifyexplicittrackskipper.R;
 import com.sk7software.spotifyexplicittrackskipper.SpotifyKeepAlive;
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;

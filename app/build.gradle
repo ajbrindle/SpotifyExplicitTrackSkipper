@@ -23,6 +23,9 @@ android {
     packagingOptions {
         pickFirst 'META-INF/LICENSE'
     }
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
 }
 
 repositories {
@@ -41,6 +44,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.json:json:20160810'
     testCompile 'org.robolectric:robolectric:3.3.2'
+    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.2.0'
+    //androidTestCompile 'com.squareup.retrofit2:retrofit:2.3.0'
 
     compile 'com.spotify.sdk:spotify-auth:1.0.0-beta13@aar'
     compile 'com.spotify.sdk:spotify-player:1.0.0-beta13@aar'

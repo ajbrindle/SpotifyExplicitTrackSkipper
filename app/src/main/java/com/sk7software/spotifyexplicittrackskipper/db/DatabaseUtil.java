@@ -10,7 +10,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
-import com.sk7software.spotifyexplicittrackskipper.music.Track;
+import com.sk7software.spotifyexplicittrackskipper.model.Track;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -28,7 +28,7 @@ public class DatabaseUtil extends SQLiteOpenHelper {
 
     private SQLiteDatabase database;
 
-    public static DatabaseUtil getInstance(Context context) {
+    public static synchronized DatabaseUtil getInstance(Context context) {
         if (dbInstance == null) {
             dbInstance = new DatabaseUtil(context);
             dbInstance.database = dbInstance.getSQLiteDatabase(context);

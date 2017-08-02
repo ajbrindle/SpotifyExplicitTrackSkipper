@@ -1,6 +1,6 @@
 package com.sk7software.spotifyexplicittrackskipper;
 
-import com.sk7software.spotifyexplicittrackskipper.music.Track;
+import com.sk7software.spotifyexplicittrackskipper.model.Track;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,25 +23,12 @@ import static org.junit.Assert.*;
 public class TrackConstructTest {
 
     private JSONObject fetchJSON(String filename) {
-        try {
-            InputStream in = this.getClass().getClassLoader().getResourceAsStream(filename);
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            StringBuilder responseStrBuilder = new StringBuilder();
-
-            String inputStr;
-            while ((inputStr = streamReader.readLine()) != null)
-                responseStrBuilder.append(inputStr);
-
-            return new JSONObject(responseStrBuilder.toString());
-        } catch (IOException ie) {
-            return null;
-        } catch (JSONException je) {
-            return null;
-        }
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream(filename);
+        return TestUtilities.fetchJSON(in);
     }
 
     @Test
-    public void testTrackJSON() {
+    public void testTrackJSON() throws IOException, JSONException {
         JSONObject testJSON = fetchJSON("mrbrightside.json");
         assertNotNull(testJSON);
 
@@ -55,7 +42,7 @@ public class TrackConstructTest {
     }
 
     @Test
-    public void testNowPlayingJSON() {
+    public void testNowPlayingJSON() throws IOException, JSONException {
         JSONObject testJSON = fetchJSON("nowplaying.json");
         assertNotNull(testJSON);
 
@@ -69,7 +56,7 @@ public class TrackConstructTest {
     }
 
     @Test
-    public void testToString() {
+    public void testToString() throws IOException, JSONException {
         JSONObject testJSON = fetchJSON("nowplaying.json");
         assertNotNull(testJSON);
 
@@ -85,7 +72,7 @@ public class TrackConstructTest {
     }
 
     @Test
-    public void testIncompleteToString() {
+    public void testIncompleteToString() throws IOException, JSONException {
         JSONObject testJSON = fetchJSON("nowplaying.json");
         assertNotNull(testJSON);
 
@@ -94,7 +81,7 @@ public class TrackConstructTest {
     }
 
     @Test
-    public void testInvalidJSON() {
+    public void testInvalidJSON() throws IOException, JSONException {
         JSONObject testJSON = fetchJSON("invalid.json");
         assertNotNull(testJSON);
 

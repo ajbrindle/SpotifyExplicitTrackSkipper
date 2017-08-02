@@ -4,8 +4,15 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
-import com.sk7software.spotifyexplicittrackskipper.music.Track;
+import com.sk7software.spotifyexplicittrackskipper.model.Track;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Date;
 
 /**
@@ -55,5 +62,22 @@ public class TestUtilities {
     public static void insertAlbumArt(DatabaseUtil db) {
         Bitmap b = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         db.saveAlbumArt("abcd1234", b);
+    }
+
+    public static JSONObject fetchJSON(InputStream in) {
+        try {
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            StringBuilder responseStrBuilder = new StringBuilder();
+
+            String inputStr;
+            while ((inputStr = streamReader.readLine()) != null)
+                responseStrBuilder.append(inputStr);
+
+            return new JSONObject(responseStrBuilder.toString());
+        } catch (IOException ie) {
+            return null;
+        } catch (JSONException je) {
+            return null;
+        }
     }
 }

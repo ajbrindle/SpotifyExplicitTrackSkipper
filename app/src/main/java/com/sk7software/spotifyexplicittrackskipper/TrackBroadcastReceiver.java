@@ -1,12 +1,11 @@
 package com.sk7software.spotifyexplicittrackskipper;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.view.KeyEvent;
+
+import com.sk7software.spotifyexplicittrackskipper.util.PreferencesUtil;
 
 public class TrackBroadcastReceiver extends BroadcastReceiver {
 

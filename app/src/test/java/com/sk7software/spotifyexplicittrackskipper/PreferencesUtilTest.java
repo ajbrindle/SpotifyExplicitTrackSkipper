@@ -3,6 +3,8 @@ package com.sk7software.spotifyexplicittrackskipper;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.sk7software.spotifyexplicittrackskipper.util.PreferencesUtil;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,4 +1,4 @@
-package com.sk7software.spotifyexplicittrackskipper.music;
+package com.sk7software.spotifyexplicittrackskipper.model;
 
 /**
  * Created by andre_000 on 24/07/2017.

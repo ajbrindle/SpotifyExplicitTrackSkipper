@@ -15,9 +15,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
-import com.sk7software.spotifyexplicittrackskipper.PreferencesUtil;
+import com.sk7software.spotifyexplicittrackskipper.model.User;
+import com.sk7software.spotifyexplicittrackskipper.util.PreferencesUtil;
 import com.sk7software.spotifyexplicittrackskipper.R;
-import com.sk7software.spotifyexplicittrackskipper.SpotifyUtil;
+import com.sk7software.spotifyexplicittrackskipper.util.SpotifyUtil;
+import com.sk7software.spotifyexplicittrackskipper.model.Auth;
+import com.sk7software.spotifyexplicittrackskipper.util.DateUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -84,7 +87,7 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
             String accessToken = response.substring(response.indexOf("<Access>") + 8, response.indexOf("</Access>"));
             String refreshToken = response.substring(response.indexOf("<Refresh>") + 9, response.indexOf("</Refresh>"));
             String expirySeconds = response.substring(response.indexOf("<Expires>") + 9, response.indexOf("</Expires>"));
-            String expiryTime = AppConstants.calcExpiryTime(expirySeconds);
+            String expiryTime = DateUtil.calcExpiryTime(Integer.parseInt(expirySeconds));
             Log.d(TAG, "Access token: " + accessToken);
             Log.d(TAG, "Refresh token: " + refreshToken);
             Log.d(TAG, "Expires in: " + expirySeconds);
@@ -99,12 +102,22 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
     }
 
     private void authenticate() {
-        if (SpotifyUtil.authExpired()) {
-            // Determine if there is a refresh token
-            if (!SpotifyUtil.refreshSpotifyAuthToken(getApplicationContext(), new SpotifyUtil.SpotifyCallback() {
+        if (DateUtil.authExpired()) {
+            String refreshToken = PreferencesUtil.getInstance().getStringPreference(AppConstants.PREFERENCE_REFRESH_TOKEN);
+
+            // Attempt to refresh to auth token
+            if (!SpotifyUtil.refreshSpotifyAuthToken(getApplicationContext(), refreshToken, new SpotifyUtil.SpotifyCallback() {
                 @Override
-                public void onRequestCompleted(Map<String, String> callbackData) {
+                public void onRequestCompleted(Map<String, Object> callbackData) {
+                    Auth a = (Auth)callbackData.get("auth");
+                    String expiryTime = DateUtil.calcExpiryTime(a.getExpiresIn());
+                    PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_TOKEN, a.getAccessToken());
+                    PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
                     launchMainActivity();
+                }
+                @Override
+                public void onError(Exception e) {
+                    authenticateInWebView();
                 }
             })) {
                 authenticateInWebView();
@@ -166,9 +179,14 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
 
                 SpotifyUtil.showLoginDetails(getApplicationContext(), new SpotifyUtil.SpotifyCallback() {
                     @Override
-                    public void onRequestCompleted(Map<String, String> callbackData) {
-                        txtUserId.setText(callbackData.get("userId").toString());
-                        new ImageLoadTask(callbackData.get("imageURL").toString(), null, null, imgUser).execute();
+                    public void onRequestCompleted(Map<String, Object> callbackData) {
+                        User u = (User)callbackData.get("user");
+                        txtUserId.setText(u.getId());
+                        new ImageLoadTask(u.getImages()[0].getUrl(), null, null, imgUser).execute();
+                    }
+                    @Override
+                    public void onError(Exception e) {
+                        txtUserId.setText("Error getting user info.  Log out and retry.");
                     }
                 });
                 btnLogout.setVisibility(View.VISIBLE);

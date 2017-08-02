@@ -21,13 +21,8 @@ public class SpotifyKeepAlive extends BroadcastReceiver
     private static boolean alarmSet = false;
 
     @Override
-    public void onReceive(Context context, Intent intent)
-    {
-        Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        i.setComponent(new ComponentName("com.spotify.music", "com.spotify.music.internal.receiver.MediaButtonReceiver"));
-        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK));
-        context.sendBroadcast(i);
-        Log.d(TAG, "Keep alive sent");
+    public void onReceive(Context context, Intent intent) {
+        sendPing(context);
         setAlarm(context);
     }
 
@@ -60,5 +55,13 @@ public class SpotifyKeepAlive extends BroadcastReceiver
         alarmManager.cancel(sender);
         Log.d(TAG, "Keep alive cancelled");
         alarmSet = false;
+    }
+
+    public static void sendPing(Context context) {
+        Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        i.setComponent(new ComponentName("com.spotify.music", "com.spotify.music.internal.receiver.MediaButtonReceiver"));
+        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_AUDIO_TRACK));
+        context.sendBroadcast(i);
+        Log.d(TAG, "Keep alive sent");
     }
 }

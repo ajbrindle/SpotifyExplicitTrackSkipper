@@ -1,4 +1,4 @@
-package com.sk7software.spotifyexplicittrackskipper.music;
+package com.sk7software.spotifyexplicittrackskipper.model;
 
 import android.util.Log;
 
@@ -9,6 +9,7 @@ import com.sk7software.spotifyexplicittrackskipper.AppConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -51,26 +52,16 @@ public class Track {
         this.skipped = (skipped == 0 ? false : true);
     }
 
-    public static Track createFromJSON(JSONObject response) {
+    public static Track createFromJSON(JSONObject response) throws IOException, JSONException {
         Track track = new Track();
-        try {
-            JSONObject trackInfo =
-                    (response.has("item")
-                            ? response.getJSONObject("item")
-                            : response);
+        JSONObject trackInfo =
+                (response.has("item")
+                        ? response.getJSONObject("item")
+                        : response);
 
-            ObjectMapper mapper = new ObjectMapper()
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            try {
-                track = mapper.readValue(trackInfo.toString(), Track.class);
-            } catch (Exception e) {
-                Log.d(TAG, "Error parsing track info: " + e.getMessage());
-                return null;
-            }
-        } catch (JSONException je) {
-            Log.d(TAG, "JSONException: " + je.getMessage());
-            return null;
-        }
+        ObjectMapper mapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        track = mapper.readValue(trackInfo.toString(), Track.class);
 
         return track;
     }

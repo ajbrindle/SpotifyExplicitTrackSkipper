@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
 import com.sk7software.spotifyexplicittrackskipper.R;
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
-import com.sk7software.spotifyexplicittrackskipper.music.Track;
+import com.sk7software.spotifyexplicittrackskipper.model.Track;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

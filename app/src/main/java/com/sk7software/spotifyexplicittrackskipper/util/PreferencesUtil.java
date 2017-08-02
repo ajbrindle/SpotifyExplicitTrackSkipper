@@ -1,7 +1,9 @@
-package com.sk7software.spotifyexplicittrackskipper;
+package com.sk7software.spotifyexplicittrackskipper.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.sk7software.spotifyexplicittrackskipper.AppConstants;
 
 /**
  * Created by andre_000 on 06/07/2017.

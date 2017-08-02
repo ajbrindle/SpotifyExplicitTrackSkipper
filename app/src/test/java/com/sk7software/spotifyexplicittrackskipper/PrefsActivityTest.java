@@ -5,6 +5,7 @@ import android.widget.Switch;
 
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 import com.sk7software.spotifyexplicittrackskipper.ui.PrefsActivity;
+import com.sk7software.spotifyexplicittrackskipper.util.PreferencesUtil;
 
 import org.junit.After;
 import org.junit.Before;

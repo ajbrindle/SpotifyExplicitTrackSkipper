@@ -1,10 +1,9 @@
 package com.sk7software.spotifyexplicittrackskipper;
 
-import android.database.Cursor;
 import android.graphics.Bitmap;
 
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
-import com.sk7software.spotifyexplicittrackskipper.music.Track;
+import com.sk7software.spotifyexplicittrackskipper.model.Track;
 
 import org.junit.After;
 import org.junit.Before;
