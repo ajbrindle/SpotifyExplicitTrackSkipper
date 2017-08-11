@@ -3,6 +3,8 @@ package com.sk7software.spotifyexplicittrackskipper;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
@@ -21,6 +23,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
+import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowIntent;
 import org.robolectric.shadows.ShadowView;
@@ -60,9 +63,10 @@ public class MainActivityTest {
     }
 
     @Test
-    public void testAdvancedSettingsIntent() {
+    public void testSettingsIntent() {
         MainActivity ma = Robolectric.setupActivity(MainActivity.class);
-        ma.findViewById(R.id.txtAdvanced).performClick();
+        MenuItem settings = new RoboMenuItem(R.id.action_settings); //shadowOf(ma).getOptionsMenu().findItem(R.id.action_settings);
+        ma.onOptionsItemSelected(settings);
         Intent expectedIntent = new Intent(ma, PrefsActivity.class);
         assertTrue(shadowOf(ma).getNextStartedActivity().filterEquals(expectedIntent));
     }

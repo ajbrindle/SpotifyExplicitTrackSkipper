@@ -113,6 +113,21 @@ public class PrefsActivityTest {
     }
 
     @Test
+    public void testSwipeActionDefaultValue() {
+        PrefsActivity pa = Robolectric.setupActivity(PrefsActivity.class);
+        Spinner s = (Spinner)pa.findViewById(R.id.spiSwipeAction);
+        assertEquals(s.getSelectedItemId(), 0);
+    }
+
+    @Test
+    public void testSwipeActionValue() {
+        prefs.addPreference(AppConstants.PREFERENCE_SWIPE_ACTION, 1);
+        PrefsActivity pa = Robolectric.setupActivity(PrefsActivity.class);
+        Spinner s = (Spinner)pa.findViewById(R.id.spiSwipeAction);
+        assertEquals(s.getSelectedItemId(), 1);
+    }
+
+    @Test
     public void testDoneButton() {
         prefs.addPreference(AppConstants.PREFERENCE_KEEP_ALIVE, false);
         PrefsActivity pa = Robolectric.setupActivity(PrefsActivity.class);
