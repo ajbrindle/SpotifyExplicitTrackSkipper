@@ -96,7 +96,7 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
             PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_TOKEN, accessToken);
             PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_REFRESH_TOKEN, refreshToken);
             PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
-
+            updateUI();
             launchMainActivity();
         }
     }
@@ -113,6 +113,7 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
                     String expiryTime = DateUtil.calcExpiryTime(a.getExpiresIn());
                     PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_TOKEN, a.getAccessToken());
                     PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
+                    updateUI();
                     launchMainActivity();
                 }
                 @Override
@@ -124,7 +125,7 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
             }
         } else {
             // Auth token not expired
-            launchMainActivity();
+            updateUI();
         }
     }
 
@@ -161,8 +162,6 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
     }
 
     private void launchMainActivity() {
-        updateUI();
-
         // Launch main activity
         Intent i = new Intent(AuthoriseActivity.this, MainActivity.class);
         startActivity(i);

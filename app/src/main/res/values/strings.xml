@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SpotifyExplicitTrackSkipper</string>
+    <string name="app_name">Sanctify</string>
 
     <string-array name="keep_alive_intervals">
         <item>30</item>
@@ -19,5 +19,10 @@
         <item>100</item>
         <item>150</item>
         <item>200</item>
+    </string-array>
+
+    <string-array name="swipe_actions">
+        <item>Delete</item>
+        <item>Set Explicit</item>
     </string-array>
 </resources>

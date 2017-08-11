@@ -81,13 +81,15 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
     @Override
     public TrackViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rowView = inflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+        rowView.setTag(new MainActivity.Presenter());
         return new TrackViewHolder(rowView);
     }
 
     @Override
     public void onBindViewHolder(TrackViewHolder holder, int position) {
-        holder.bindData(tracks.get(position));
-        holder.itemView.setActivated(selectedItems.get(position, false));
+        ((MainActivity.Presenter)holder.itemView.getTag()).presentListItem(holder, tracks, position);
+//        holder.bindData(tracks.get(position));
+//        holder.itemView.setActivated(selectedItems.get(position, false));
     }
 
     @Override
@@ -142,6 +144,10 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         final ImageView albumImg;
         final TextView id;
 
+        public String getId() {
+            return id.getText().toString();
+        }
+
         public TrackViewHolder(View itemView) {
             super(itemView);
             title = (TextView)itemView.findViewById(R.id.txtSongTitle);
@@ -173,4 +179,5 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
             }
         }
     }
+
 }

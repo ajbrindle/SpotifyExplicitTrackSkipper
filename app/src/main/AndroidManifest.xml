@@ -36,8 +36,10 @@
             android:name=".SpotifyKeepAlive"
             android:enabled="true"></receiver>
 
-        <activity android:name=".ui.MainActivity"></activity>
-        <activity android:name=".ui.PrefsActivity"></activity>
+        <activity android:name=".ui.MainActivity"
+            android:parentActivityName=".ui.AuthoriseActivity" />
+        <activity android:name=".ui.PrefsActivity"
+            android:parentActivityName=".ui.MainActivity" />
     </application>
 
 </manifest>

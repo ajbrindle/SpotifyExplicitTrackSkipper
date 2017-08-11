@@ -1,7 +1,9 @@
 package com.sk7software.spotifyexplicittrackskipper.ui;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,6 +21,7 @@ public class PrefsActivity extends AppCompatActivity {
 
     private Spinner spiKeepAlive;
     private Spinner spiHistory;
+    private Spinner spiSwipeAction;
     private Switch swiKeepAlive;
 
     private static final int DEFAULT_HISTORY_ITEM = 3;
@@ -28,6 +31,11 @@ public class PrefsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prefs);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
 
         // Switch indicating whether "keep alive" pings should be sent to Spotify
         swiKeepAlive = (Switch)findViewById(R.id.swiKeepAlive);
@@ -45,6 +53,13 @@ public class PrefsActivity extends AppCompatActivity {
                 R.array.history_items, android.R.layout.simple_spinner_item);
         historyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spiHistory.setAdapter(historyAdapter);
+
+        // Spinner for swipe action
+        spiSwipeAction = (Spinner)findViewById(R.id.spiSwipeAction);
+        ArrayAdapter<CharSequence> swipeActionAdapter = ArrayAdapter.createFromResource(this,
+                R.array.swipe_actions, android.R.layout.simple_spinner_item);
+        historyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spiSwipeAction.setAdapter(swipeActionAdapter);
 
         // Button to clear image cache
         Button btnClearImages = (Button)findViewById(R.id.btnClear);
@@ -90,6 +105,9 @@ public class PrefsActivity extends AppCompatActivity {
         int historyItems = Integer.valueOf(spiHistory.getSelectedItem().toString());
         PreferencesUtil.getInstance().addPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS, historyItems);
 
+        int swipeAction = Integer.valueOf((int)spiSwipeAction.getSelectedItemId());
+        PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_SWIPE_ACTION, swipeAction);
+
         boolean keepAlive = swiKeepAlive.isChecked();
         PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_KEEP_ALIVE, keepAlive);
 
@@ -113,6 +131,9 @@ public class PrefsActivity extends AppCompatActivity {
             selectedPosition = DEFAULT_HISTORY_ITEM;
         }
         spiHistory.setSelection(selectedPosition);
+
+        Integer swipeAction = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERENCE_SWIPE_ACTION);
+        spiSwipeAction.setSelection(swipeAction);
 
         swiKeepAlive.setChecked(PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE));
         if (!swiKeepAlive.isChecked()) {
