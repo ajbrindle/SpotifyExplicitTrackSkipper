@@ -40,6 +40,7 @@ import com.sk7software.spotifyexplicittrackskipper.SpotifyKeepAlive;
 import com.sk7software.spotifyexplicittrackskipper.TrackLookup;
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements RecyclerView.OnItemTouchListener, View.OnClickListener {
@@ -112,22 +113,36 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
         // Set the item touch helper to define list item behaviour on swipe
         final DatabaseUtil db = DatabaseUtil.getInstance(getApplicationContext());
         final BitmapFactory.Options options;
-        final Drawable d;
+        final List<Drawable> backgrounds = new ArrayList<>();
 
         Resources res = this.getResources();
         options = new BitmapFactory.Options();
         options.inSampleSize = 8;
-        Bitmap b = BitmapFactory.decodeResource(res, R.drawable.ic_explicit_background, options);
-        d = new BitmapDrawable(res, b);
+        Bitmap b = BitmapFactory.decodeResource(res, R.drawable.delete, options);
+        backgrounds.add(new BitmapDrawable(res, b));
+        b = BitmapFactory.decodeResource(res, R.drawable.explicit, options);
+        backgrounds.add(new BitmapDrawable(res, b));
+        b = BitmapFactory.decodeResource(res, R.drawable.notexplicit, options);
+        backgrounds.add(new BitmapDrawable(res, b));
 
         ItemTouchHelper itemTouchHelper =
                 new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                        // Remove item from backing list here
+                        // Determine swipe action
+                        int swipeAction = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERENCE_SWIPE_ACTION);
                         int adapterPosition = viewHolder.getAdapterPosition();
-                        db.deleteTrack(trackAdapter.getIdAtPosition(adapterPosition), trackAdapter.getPlayTimeAtPosition(adapterPosition));
-                        trackAdapter.removeItem(adapterPosition);
+
+                        if (swipeAction == AppConstants.SWIPE_ACTION_DELETE) {
+                            // Remove item from backing list here
+                            db.deleteTrack(trackAdapter.getIdAtPosition(adapterPosition), trackAdapter.getPlayTimeAtPosition(adapterPosition));
+                            trackAdapter.removeItem(adapterPosition);
+                        } else if (swipeAction == AppConstants.SWIPE_ACTION_TAG) {
+                            // Left = tag explicit
+                            boolean isExplicit = swipeDir == ItemTouchHelper.LEFT;
+                            db.tagTrack(trackAdapter.getIdAtPosition(adapterPosition), isExplicit);
+                            trackAdapter.tagItem(adapterPosition, isExplicit, getApplicationContext());
+                        }
                     }
 
                     public boolean onMove(RecyclerView view, RecyclerView.ViewHolder v1, RecyclerView.ViewHolder v2) {
@@ -141,6 +156,19 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
                     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                         final ColorDrawable background = new ColorDrawable(Color.RED);
                         View itemView = viewHolder.itemView;
+                        Drawable d;
+
+                        // Get the right drawable
+                        int swipeAction = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERENCE_SWIPE_ACTION);
+                        if (swipeAction == AppConstants.SWIPE_ACTION_DELETE) {
+                            d = backgrounds.get(0);
+                        } else {
+                            if (dX < 0) {
+                                d = backgrounds.get(1);
+                            } else {
+                                d = backgrounds.get(2);
+                            }
+                        }
                         d.setBounds(0, itemView.getTop(), itemView.getRight(), itemView.getBottom());
 
                         ClipDrawable cd = new ClipDrawable(d,

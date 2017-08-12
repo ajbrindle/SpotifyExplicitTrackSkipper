@@ -1,5 +1,7 @@
 package com.sk7software.spotifyexplicittrackskipper.ui;
 
+import android.app.Application;
+import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
@@ -13,6 +15,7 @@ import com.sk7software.spotifyexplicittrackskipper.AppConstants;
 import com.sk7software.spotifyexplicittrackskipper.R;
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 import com.sk7software.spotifyexplicittrackskipper.model.Track;
+import com.sk7software.spotifyexplicittrackskipper.util.SpotifyUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -136,6 +139,18 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
         notifyDataSetChanged();
     }
 
+    public void tagItem(int position, boolean isExplicit, Context context) {
+        Track t = tracks.get(position);
+        t.setExplicit(isExplicit);
+
+        // Skip the track if it is the one currently being played
+        if (position == 0 && isExplicit) {
+            SpotifyUtil.skipTrack(context);
+            t.setSkipped(true);
+        }
+
+        notifyDataSetChanged();
+    }
 
     public class TrackViewHolder extends RecyclerView.ViewHolder {
         final TextView title;

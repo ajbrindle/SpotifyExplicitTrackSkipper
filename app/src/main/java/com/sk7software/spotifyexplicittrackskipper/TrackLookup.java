@@ -90,6 +90,7 @@ public class TrackLookup {
             @Override
             public void onRequestCompleted(Map<String, Object> callbackData) {
                 Track t = (Track)callbackData.get("track");
+                t.overrideExplicit(DatabaseUtil.getInstance(context));
                 boolean skipped = false;
 
                 if (t.isExplicit()) {

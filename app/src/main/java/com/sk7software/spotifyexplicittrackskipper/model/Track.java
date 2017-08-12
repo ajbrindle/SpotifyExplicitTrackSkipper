@@ -1,10 +1,12 @@
 package com.sk7software.spotifyexplicittrackskipper.model;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
+import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -141,6 +143,16 @@ public class Track {
             return album.getImages()[1].getUrl();
         } else {
             throw new IllegalStateException("Album artwork not defined");
+        }
+    }
+
+    public void overrideExplicit(DatabaseUtil db) {
+        int tagged = db.isTagged(id);
+
+        if (tagged == DatabaseUtil.TAGGED_EXPLICIT) {
+            explicit = true;
+        } else if (tagged == DatabaseUtil.TAGGED_NOT_EXPLICIT) {
+            explicit = false;
         }
     }
 

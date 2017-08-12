@@ -1,6 +1,7 @@
 package com.sk7software.spotifyexplicittrackskipper;
 
 import android.graphics.Bitmap;
+import android.provider.ContactsContract;
 
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 import com.sk7software.spotifyexplicittrackskipper.model.Track;
@@ -49,6 +50,7 @@ public class DatabaseUtilTest {
     public void testCreateTables() {
         assertTrue(countRows("TRACK_HISTORY", db) == 0);
         assertTrue(countRows("IMAGE_CACHE", db) == 0);
+        assertTrue(countRows("TRACK_TAG", db) == 0);
     }
 
     @Test
@@ -127,4 +129,20 @@ public class DatabaseUtilTest {
         assertTrue(countRows("TRACK_HISTORY", db) == 0);
     }
 
+    @Test
+    public void testTagExplicit() {
+        db.tagTrack("abc123", true);
+        assertEquals(db.isTagged("abc123"), DatabaseUtil.TAGGED_EXPLICIT);
+    }
+
+    @Test
+    public void testTagNotExplicit() {
+        db.tagTrack("abc123", false);
+        assertEquals(db.isTagged("abc123"), DatabaseUtil.TAGGED_NOT_EXPLICIT);
+    }
+
+    @Test
+    public void testNotTagged() {
+        assertEquals(db.isTagged("abc123"), DatabaseUtil.NOT_TAGGED);
+    }
 }

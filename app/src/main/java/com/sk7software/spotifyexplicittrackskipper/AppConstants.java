@@ -31,4 +31,7 @@ public class AppConstants {
 
     public static final String ADMOB_APP_ID = "ca-app-pub-9041522149264298~7515417162";
     public static final String ADMOB_APP_UNIT_ID = "ca-app-pub-9041522149264298/4422349965";
+
+    public static final int SWIPE_ACTION_DELETE = 0;
+    public static final int SWIPE_ACTION_TAG = 1;
 }

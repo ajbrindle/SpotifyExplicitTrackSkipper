@@ -20,11 +20,15 @@ import java.util.List;
 
 public class DatabaseUtil extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "com.sk7software.spotifyexplicittrackskipper.db";
     private static final String TAG = DatabaseUtil.class.getSimpleName();
     private static final SimpleDateFormat PLAY_TIME_FORMAT = new SimpleDateFormat(AppConstants.PLAY_TIME_FORMAT);
     private static DatabaseUtil dbInstance;
+
+    public static final int NOT_TAGGED = -1;
+    public static final int TAGGED_NOT_EXPLICIT = 0;
+    public static final int TAGGED_EXPLICIT = 1;
 
     private SQLiteDatabase database;
 
@@ -80,12 +84,21 @@ public class DatabaseUtil extends SQLiteOpenHelper {
                             ");";
             db.execSQL(createTable);
         }
-        if (oldv <= 1 && newv == 2) {
+        if (oldv <= 1 && newv >= 2) {
             // Add image thumbnail table
             String createTable =
                     "CREATE TABLE IMAGE_CACHE (" +
                             "SPOTIFY_ID TEXT PRIMARY KEY," +
                             "IMAGE_DATA BLOB" +
+                            ");";
+            db.execSQL(createTable);
+        }
+        if (oldv <= 2 && newv >= 3) {
+            // Add track tagging table
+            String createTable =
+                    "CREATE TABLE TRACK_TAG (" +
+                            "SPOTIFY_ID TEXT PRIMARY KEY," +
+                            "EXPLICIT INTEGER" +
                             ");";
             db.execSQL(createTable);
         }
@@ -207,6 +220,52 @@ public class DatabaseUtil extends SQLiteOpenHelper {
         }
 
         return image;
+    }
+
+    public void tagTrack(String id, boolean isExplicit) {
+        String sql = "INSERT OR REPLACE INTO TRACK_TAG " +
+                "(spotify_id, explicit) " +
+                "VALUES(?, ?);";
+        SQLiteStatement statement = database.compileStatement(sql);
+
+        int col = 1;
+        statement.bindString(col++, id);
+        statement.bindLong(col++, (isExplicit ? 1L : 0L));
+
+        long rowId = statement.executeInsert();
+
+        // Also update listening history
+        sql = "UPDATE TRACK_HISTORY SET explicit = " + (isExplicit ? "1" : "0") +
+                " WHERE spotify_id = ?";
+        statement = database.compileStatement(sql);
+
+        statement.bindString(1, id);
+
+        rowId = statement.executeUpdateDelete();
+    }
+
+    public int isTagged(String id) {
+        Cursor cursor = null;
+        int tagged = NOT_TAGGED;
+
+        try {
+            cursor = database.query("TRACK_TAG", new String[]{"EXPLICIT"},
+                    "SPOTIFY_ID=?", new String[] {String.valueOf(id)}, null, null, null, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                int explicit = cursor.getInt(0);
+                if (explicit == 0) {
+                    tagged = TAGGED_NOT_EXPLICIT;
+                } else {
+                    tagged = TAGGED_EXPLICIT;
+                }
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return tagged;
+
     }
 
     public void clearImageCache() {
