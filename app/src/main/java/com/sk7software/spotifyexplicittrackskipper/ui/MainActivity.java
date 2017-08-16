@@ -1,5 +1,6 @@
 package com.sk7software.spotifyexplicittrackskipper.ui;
 
+import android.graphics.Paint;
 import android.support.v7.app.ActionBar;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -27,6 +28,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 
 import com.google.android.gms.ads.AdRequest;
@@ -117,12 +119,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
 
         Resources res = this.getResources();
         options = new BitmapFactory.Options();
-        options.inSampleSize = 8;
-        Bitmap b = BitmapFactory.decodeResource(res, R.drawable.delete, options);
+        options.inSampleSize = 1;
+        Bitmap b = BitmapFactory.decodeResource(res, R.drawable.deletex, options);
         backgrounds.add(new BitmapDrawable(res, b));
-        b = BitmapFactory.decodeResource(res, R.drawable.explicit, options);
+        b = BitmapFactory.decodeResource(res, R.drawable.explicitx, options);
         backgrounds.add(new BitmapDrawable(res, b));
-        b = BitmapFactory.decodeResource(res, R.drawable.notexplicit, options);
+        b = BitmapFactory.decodeResource(res, R.drawable.notexplicitx, options);
         backgrounds.add(new BitmapDrawable(res, b));
 
         ItemTouchHelper itemTouchHelper =
@@ -154,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
 
                     @Override
                     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                        final ColorDrawable background = new ColorDrawable(Color.RED);
+                        int background;
                         View itemView = viewHolder.itemView;
                         Drawable d;
 
@@ -162,21 +164,39 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
                         int swipeAction = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERENCE_SWIPE_ACTION);
                         if (swipeAction == AppConstants.SWIPE_ACTION_DELETE) {
                             d = backgrounds.get(0);
+                            background = Color.BLUE;
                         } else {
                             if (dX < 0) {
                                 d = backgrounds.get(1);
+                                background = Color.RED;
                             } else {
                                 d = backgrounds.get(2);
+                                background = Color.GREEN;
                             }
                         }
-                        d.setBounds(0, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                        int wid = ((BitmapDrawable)d).getBitmap().getWidth();
+                        int margin = calcMargin(((BitmapDrawable) d).getBitmap(), itemView.getTop(), itemView.getBottom());
+                        d.setBounds(0, itemView.getTop()+margin, wid, itemView.getBottom()-margin);
 
+                        Paint p = new Paint();
                         ClipDrawable cd = new ClipDrawable(d,
                                 (dX > 0 ? Gravity.LEFT : Gravity.RIGHT), ClipDrawable.HORIZONTAL);
-                        cd.setLevel((int) (Math.abs(dX) * 10000 / itemView.getRight()));
-                        cd.setBounds(0, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-                        cd.draw(c);
+                        cd.setLevel((int) (Math.abs(dX) * 10000 / wid));
+                        p.setColor(background);
 
+                        if (dX > 0) {
+                            // Draw Rect with varying right side, equal to displacement dX
+                            c.drawRect((float)0, (float) itemView.getTop(), dX,
+                                    (float) itemView.getBottom(), p);
+                            cd.setBounds(0, itemView.getTop()+margin, wid, itemView.getBottom()-margin);
+                        } else {
+                            // Draw Rect with varying left side, equal to the item's right side plus negative displacement dX
+                            c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
+                                    (float) itemView.getRight(), (float) itemView.getBottom(), p);
+                            cd.setBounds(itemView.getRight()-wid, itemView.getTop()+margin, itemView.getRight(), itemView.getBottom()-margin);
+                        }
+
+                        cd.draw(c);
                         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                     }
                 });
@@ -188,6 +208,18 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
             SpotifyKeepAlive alarm = new SpotifyKeepAlive();
             alarm.initialise(getApplicationContext(), (interval > 0 ? interval : 90));
         }
+    }
+
+    private int calcMargin(Bitmap b, int top, int bottom) {
+        int bmpHt = b.getHeight();
+        int bmpWid = b.getWidth();
+        int viewHt = Math.abs(top-bottom);
+
+        if (viewHt > bmpHt) {
+            return (viewHt - bmpHt) / 2;
+        }
+
+        return 0;
     }
 
     @Override
