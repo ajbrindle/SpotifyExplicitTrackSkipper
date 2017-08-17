@@ -10,7 +10,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ClipDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -28,7 +27,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.ProgressBar;
 import android.widget.Switch;
 
 import com.google.android.gms.ads.AdRequest;
@@ -176,6 +174,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
                         }
                         int wid = ((BitmapDrawable)d).getBitmap().getWidth();
                         int margin = calcMargin(((BitmapDrawable) d).getBitmap(), itemView.getTop(), itemView.getBottom());
+                        if (margin == 0) {
+                            wid = calcScaledWidth(((BitmapDrawable) d).getBitmap(), itemView.getTop(), itemView.getBottom());
+                        }
                         d.setBounds(0, itemView.getTop()+margin, wid, itemView.getBottom()-margin);
 
                         Paint p = new Paint();
@@ -212,14 +213,27 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
 
     private int calcMargin(Bitmap b, int top, int bottom) {
         int bmpHt = b.getHeight();
-        int bmpWid = b.getWidth();
-        int viewHt = Math.abs(top-bottom);
+        int viewHt = Math.abs(top - bottom);
 
         if (viewHt > bmpHt) {
             return (viewHt - bmpHt) / 2;
         }
 
         return 0;
+    }
+
+    private int calcScaledWidth(Bitmap b, int top, int bottom) {
+        int bmpWid = b.getWidth();
+        int bmpHt = b.getHeight();
+        int viewHt = Math.abs(top - bottom);
+
+        if (bmpHt > viewHt) {
+            // Image will get scaled, so ensure the aspect ratio is preserved
+            double scaleFactor = (double)viewHt/(double)bmpHt;
+            bmpWid = (int)(bmpWid * scaleFactor);
+        }
+
+        return bmpWid;
     }
 
     @Override
