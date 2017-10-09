@@ -15,6 +15,7 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -33,6 +34,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
+import com.sk7software.spotifyexplicittrackskipper.TrackBroadcastReceiver;
 import com.sk7software.spotifyexplicittrackskipper.model.Track;
 import com.sk7software.spotifyexplicittrackskipper.util.PreferencesUtil;
 import com.sk7software.spotifyexplicittrackskipper.R;
@@ -43,7 +45,7 @@ import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements RecyclerView.OnItemTouchListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements RecyclerView.OnItemTouchListener, View.OnClickListener, ActivityDataExchange {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -65,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
+        final DatabaseUtil db = DatabaseUtil.getInstance(getApplicationContext());
+
         swipeRefresh = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
 
         // Initialise context for preferences
@@ -74,16 +78,21 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
 
         boolean isSet = PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT);
         swiExplicit.setChecked(isSet);
+        updateTrackService(isSet);
 
         swiExplicit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT, isChecked);
+                updateTrackService(isChecked);
             }
         });
 
         trackView = (RecyclerView)findViewById(R.id.listHistory);
         trackView.addOnItemTouchListener(this);
         trackAdapter = new TrackAdapter(LayoutInflater.from(this));
+        trackAdapter.setDB(db);
+        trackView.setLayoutManager(new LinearLayoutManager(this));
+        trackView.setAdapter(trackAdapter);
         showHistoryList();
 
         gestureDetector =
@@ -111,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
         mAdView.loadAd(adRequest);
 
         // Set the item touch helper to define list item behaviour on swipe
-        final DatabaseUtil db = DatabaseUtil.getInstance(getApplicationContext());
         final BitmapFactory.Options options;
         final List<Drawable> backgrounds = new ArrayList<>();
 
@@ -245,10 +253,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
     @Override
     public void onClick(View view) {
         if (view == null) return;
-//        if (view.getId() == R.id.txtAdvanced) {
-//            Intent i = new Intent(getApplicationContext(), PrefsActivity.class);
-//            startActivity(i);
-//        }
     }
 
     @Override
@@ -271,19 +275,38 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
+    }
+
+    @Override
+    public void updateActivity() {
+        final DatabaseUtil db = DatabaseUtil.getInstance(getApplicationContext());
+        int limit = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS);
+        final List<Track> tracksList = db.getTracks(limit);
+        trackAdapter.updateTracks(tracksList);
+        trackAdapter.notifyDataSetChanged();
+        swipeRefresh.setRefreshing(false);
     }
 
     public void showHistoryList() {
         TrackLookup tl = new TrackLookup(getApplicationContext());
-        tl.getTrackInfo(this, trackView, trackAdapter, swipeRefresh);
+        tl.getTrackInfo(this);//, trackView, trackAdapter, swipeRefresh);
     }
 
     private void myToggleSelection(int idx) {
         trackAdapter.toggleSelection(idx);
     }
 
+    private void updateTrackService(boolean start) {
+        Intent i = new Intent(getApplicationContext(), TrackBroadcastReceiver.class);
+        if (start) {
+            Log.d(TAG, "Track broadcast service started");
+            startService(i);
+        } else {
+            Log.d(TAG, "Track broadcast service stopped");
+            stopService(i);
+        }
+    }
     @Override
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
         gestureDetector.onTouchEvent(e);
@@ -299,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
     }
+
     private class TacksOnGestureListener extends GestureDetector.SimpleOnGestureListener {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {

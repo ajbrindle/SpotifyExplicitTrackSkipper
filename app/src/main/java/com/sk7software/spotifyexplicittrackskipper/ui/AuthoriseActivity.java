@@ -173,6 +173,7 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
             public void run() {
                 // Show logged in details in text field
                 TextView txtLoggedIn = (TextView)findViewById(R.id.txtLoggedIn);
+                TextView txtBroadcast = (TextView)findViewById(R.id.txtBroadcast);
                 final TextView txtUserId = (TextView)findViewById(R.id.txtUserId);
                 final ImageView imgUser = (ImageView)findViewById(R.id.imgUser);
 
@@ -192,6 +193,7 @@ public class AuthoriseActivity extends Activity implements View.OnClickListener 
                 btnNext.setVisibility(View.VISIBLE);
                 txtLoggedIn.setVisibility(View.VISIBLE);
                 txtUserId.setVisibility(View.VISIBLE);
+                txtBroadcast.setVisibility(View.VISIBLE);
                 imgUser.setVisibility(View.VISIBLE);
 
                 if (webViewSpotify != null) {

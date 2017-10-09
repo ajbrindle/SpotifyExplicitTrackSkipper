@@ -25,4 +25,21 @@
         <item>Delete</item>
         <item>Set Explicit</item>
     </string-array>
+
+    <string name="broadcast_help">
+        Ensure that Device Broadcast Status is switched ON in the Spotify app on this device
+    </string>
+
+    <string name="history_help">
+        Set the number of items that are shown in your listening history list and also the action
+        that happens when swiping a list item.  Choose between deleting the entry, or setting the
+        explicit tag (left for explicit, right for not explicit). Purge the history and image cache
+        to recover storage if needed.
+    </string>
+
+    <string name="keep_alive_help">
+        Sometimes Sanctify can stop receiving notifications of track changes from Spotify.  If this
+        happens, it could be because Spotify has switched to the background. These settings try to
+        keep Spotify alive so that the notifications continue. It is an experimental feature.
+    </string>
 </resources>

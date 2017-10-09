@@ -2,22 +2,17 @@ package com.sk7software.spotifyexplicittrackskipper;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 import com.sk7software.spotifyexplicittrackskipper.model.Auth;
-import com.sk7software.spotifyexplicittrackskipper.ui.TrackAdapter;
+import com.sk7software.spotifyexplicittrackskipper.ui.ActivityDataExchange;
 import com.sk7software.spotifyexplicittrackskipper.model.Track;
 import com.sk7software.spotifyexplicittrackskipper.util.DateUtil;
 import com.sk7software.spotifyexplicittrackskipper.util.PreferencesUtil;
 import com.sk7software.spotifyexplicittrackskipper.util.SpotifyUtil;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,27 +31,18 @@ public class TrackLookup {
     private static final String TAG = TrackLookup.class.getSimpleName();
 
     private Context context;
-    private Activity mainActivity;
-    private RecyclerView trackView;
-    private TrackAdapter trackAdapter;
-    private SwipeRefreshLayout swipeRefreshLayout;
-
-
+    private ActivityDataExchange mainActivity;
 
     public TrackLookup(Context context) {
         this.context = context;
     }
 
     public void skipExplicit(String id) {
-        lookupTrack(TRACK_URI + setId(id), false);
+        lookupTrack(TRACK_URI + getTrackSpotifyId(id), false);
     }
 
-    public void getTrackInfo(Activity mainActivity, RecyclerView trackView,
-                             TrackAdapter trackAdapter, SwipeRefreshLayout swipeRefreshLayout) {
-        this.mainActivity = mainActivity;
-        this.trackView = trackView;
-        this.trackAdapter = trackAdapter;
-        this.swipeRefreshLayout = swipeRefreshLayout;
+    public void getTrackInfo(Activity mainActivity) {
+        this.mainActivity = (ActivityDataExchange)mainActivity;
         lookupTrack(NOW_PLAYING_URI, true);
     }
 
@@ -64,8 +50,6 @@ public class TrackLookup {
         // Check whether authorisation has expired
         if (DateUtil.authExpired()) {
             String refreshToken = PreferencesUtil.getInstance().getStringPreference(AppConstants.PREFERENCE_REFRESH_TOKEN);
-
-            Toast.makeText(context, "Spotify authorisation has expired", Toast.LENGTH_SHORT);
             SpotifyUtil.refreshSpotifyAuthToken(context, refreshToken, new SpotifyUtil.SpotifyCallback() {
                 @Override
                 public void onRequestCompleted(Map<String, Object> callbackData) {
@@ -105,13 +89,16 @@ public class TrackLookup {
 
                 // Update the UI if required
                 if (updateUI) {
-                    updateUI(t);
+                    mainActivity.updateActivity();
                 }
             }
 
             @Override
             public void onError(Exception e) {
-
+                // Update the UI if required
+                if (updateUI) {
+                    mainActivity.updateActivity();
+                }
             }
         });
     }
@@ -121,7 +108,7 @@ public class TrackLookup {
 
         // Check if this is the same as the most recent track in the list
         String latestTrack = db.getLatestTrackId();
-        String nowPlaying = setId(t.getId());
+        String nowPlaying = getTrackSpotifyId(t.getId());
         if (!nowPlaying.equals(latestTrack)) {
             // Store track info in database
             t.setPlayDate(new Date());
@@ -130,20 +117,7 @@ public class TrackLookup {
         }
     }
 
-    private void updateUI(Track t) {
-        final DatabaseUtil db = DatabaseUtil.getInstance(context);
-        int limit = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS);
-        final List<Track> tracksList = db.getTracks(limit);
-        trackAdapter.updateTracks(tracksList);
-        trackAdapter.setDB(db);
-        trackView.setLayoutManager(new LinearLayoutManager(mainActivity));
-        trackView.setAdapter(trackAdapter);
-        trackAdapter.notifyDataSetChanged();
-        swipeRefreshLayout.setRefreshing(false);
-
-    }
-
-    private String setId(String id) {
+    private String getTrackSpotifyId(String id) {
         if (id.contains(ID_PREFIX)) {
             return id.substring(ID_PREFIX.length());
         } else {

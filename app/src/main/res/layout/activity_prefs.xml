@@ -8,13 +8,6 @@
     android:orientation="vertical"
     tools:context="com.sk7software.spotifyexplicittrackskipper.ui.PrefsActivity">
 
-    <!--
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    -->
-
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -32,6 +25,20 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="3dp"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+            android:text="Listening History List"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="3dp"
+            android:text="@string/history_help"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -57,7 +64,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingTop="2dp">
 
             <TextView
                 android:text="Listening History Swipe Action"
@@ -105,10 +113,26 @@
 
         </RelativeLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingBottom="3dp"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+            android:text="Keep Application Active"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="3dp"
+            android:text="@string/keep_alive_help"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"/>
+
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="5dp">
 
             <Switch
                 android:id="@+id/swiKeepAlive"
@@ -122,7 +146,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingTop="2dp">
 
             <TextView
                 android:text="Keep Alive Interval (seconds)"

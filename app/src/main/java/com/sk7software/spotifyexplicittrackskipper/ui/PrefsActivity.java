@@ -58,7 +58,7 @@ public class PrefsActivity extends AppCompatActivity {
         spiSwipeAction = (Spinner)findViewById(R.id.spiSwipeAction);
         ArrayAdapter<CharSequence> swipeActionAdapter = ArrayAdapter.createFromResource(this,
                 R.array.swipe_actions, android.R.layout.simple_spinner_item);
-        historyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        swipeActionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spiSwipeAction.setAdapter(swipeActionAdapter);
 
         // Button to clear image cache
