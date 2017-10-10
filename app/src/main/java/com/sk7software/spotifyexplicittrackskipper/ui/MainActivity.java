@@ -1,5 +1,8 @@
 package com.sk7software.spotifyexplicittrackskipper.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.graphics.Paint;
 import android.support.v7.app.ActionBar;
 import android.content.Intent;
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
     private SwipeRefreshLayout swipeRefresh;
     private AdView mAdView;
 
+    private BroadcastReceiver trackReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
         trackAdapter.setDB(db);
         trackView.setLayoutManager(new LinearLayoutManager(this));
         trackView.setAdapter(trackAdapter);
-        showHistoryList();
+        //showHistoryList();
 
         gestureDetector =
                 new GestureDetectorCompat(this, new TacksOnGestureListener());
@@ -248,6 +253,28 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
     protected void onResume() {
         super.onResume();
         showHistoryList();
+        setupReceiver();
+    }
+
+    private void setupReceiver() {
+        IntentFilter intentFilter = new IntentFilter(AppConstants.APP_BROADCAST_INTENT);
+
+        trackReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d(TAG, "Received broadcast intent: " + intent.getAction());
+                updateActivity();
+            }
+        };
+        registerReceiver(trackReceiver, intentFilter);
+        Log.d(TAG, "Registered receiver");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(trackReceiver);
+        Log.d(TAG, "Unregistered receiver");
     }
 
     @Override

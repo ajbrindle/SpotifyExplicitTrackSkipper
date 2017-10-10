@@ -30,7 +30,7 @@ public class TrackBroadcastReceiver extends Service {
         super.onCreate();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BroadcastTypes.METADATA_CHANGED);
-        filter.addAction(BroadcastTypes.PLAYBACK_STATE_CHANGED);
+        //filter.addAction(BroadcastTypes.PLAYBACK_STATE_CHANGED);
         registerReceiver(trackReceiver, filter);
     }
 

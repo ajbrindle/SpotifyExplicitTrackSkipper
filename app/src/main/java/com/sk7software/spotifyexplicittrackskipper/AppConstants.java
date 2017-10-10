@@ -21,6 +21,8 @@ public class AppConstants {
     public static final String PREFERENCE_KEEP_ALIVE_INTERVAL = "PREF_KEEP_ALIVE_INTERVAL";
     public static final String PREFERENCE_SWIPE_ACTION = "PREF_SWIPE_ACTION";
 
+    public static final String APP_BROADCAST_INTENT = "com.sk7software.spotify.trackchanged";
+
     public static final String EXPIRY_TIME_FORMAT = "dd/MM/yyyy HH:mm";
     public static final String PLAY_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String PLAY_TIME_DISPLAY_FORMAT = "dd/MM/yyyy HH:mm:ss";

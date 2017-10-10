@@ -2,6 +2,7 @@ package com.sk7software.spotifyexplicittrackskipper;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
@@ -90,6 +91,9 @@ public class TrackLookup {
                 // Update the UI if required
                 if (updateUI) {
                     mainActivity.updateActivity();
+                } else {
+                    Intent i = new Intent(AppConstants.APP_BROADCAST_INTENT);
+                    context.sendBroadcast(i);
                 }
             }
 
