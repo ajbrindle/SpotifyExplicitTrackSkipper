@@ -317,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
 
     public void showHistoryList() {
         TrackLookup tl = new TrackLookup(getApplicationContext());
-        tl.getTrackInfo(this);//, trackView, trackAdapter, swipeRefresh);
+        tl.getTrackInfo();
     }
 
     private void myToggleSelection(int idx) {

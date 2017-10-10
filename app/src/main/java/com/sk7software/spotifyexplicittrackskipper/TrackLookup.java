@@ -32,22 +32,20 @@ public class TrackLookup {
     private static final String TAG = TrackLookup.class.getSimpleName();
 
     private Context context;
-    private ActivityDataExchange mainActivity;
 
     public TrackLookup(Context context) {
         this.context = context;
     }
 
     public void skipExplicit(String id) {
-        lookupTrack(TRACK_URI + getTrackSpotifyId(id), false);
+        lookupTrack(TRACK_URI + getTrackSpotifyId(id));
     }
 
-    public void getTrackInfo(Activity mainActivity) {
-        this.mainActivity = (ActivityDataExchange)mainActivity;
-        lookupTrack(NOW_PLAYING_URI, true);
+    public void getTrackInfo() {
+        lookupTrack(NOW_PLAYING_URI);
     }
 
-    private void lookupTrack(final String id, final boolean updateUI) {
+    private void lookupTrack(final String id) {
         // Check whether authorisation has expired
         if (DateUtil.authExpired()) {
             String refreshToken = PreferencesUtil.getInstance().getStringPreference(AppConstants.PREFERENCE_REFRESH_TOKEN);
@@ -58,7 +56,7 @@ public class TrackLookup {
                     String expiryTime = DateUtil.calcExpiryTime(a.getExpiresIn());
                     PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_TOKEN, a.getAccessToken());
                     PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_AUTH_EXPIRY, expiryTime);
-                    fetchTrackInfo(context, id, updateUI);
+                    fetchTrackInfo(id);
                 }
                 @Override
                 public void onError(Exception e) {
@@ -66,11 +64,11 @@ public class TrackLookup {
                 }
             });
         } else {
-            fetchTrackInfo(context, id, updateUI);
+            fetchTrackInfo(id);
         }
     }
 
-    private void fetchTrackInfo(final Context context, String url, final boolean updateUI) {
+    private void fetchTrackInfo(String url) {
         SpotifyUtil.fetchTrackInfo(context, url, new SpotifyUtil.SpotifyCallback() {
             @Override
             public void onRequestCompleted(Map<String, Object> callbackData) {
@@ -87,22 +85,15 @@ public class TrackLookup {
 
                 // Store track in track history
                 storeTrack(t);
-
-                // Update the UI if required
-                if (updateUI) {
-                    mainActivity.updateActivity();
-                } else {
-                    Intent i = new Intent(AppConstants.APP_BROADCAST_INTENT);
-                    context.sendBroadcast(i);
-                }
+                Intent i = new Intent(AppConstants.APP_BROADCAST_INTENT);
+                context.sendBroadcast(i);
             }
 
             @Override
             public void onError(Exception e) {
                 // Update the UI if required
-                if (updateUI) {
-                    mainActivity.updateActivity();
-                }
+                Intent i = new Intent(AppConstants.APP_BROADCAST_INTENT);
+                context.sendBroadcast(i);
             }
         });
     }
