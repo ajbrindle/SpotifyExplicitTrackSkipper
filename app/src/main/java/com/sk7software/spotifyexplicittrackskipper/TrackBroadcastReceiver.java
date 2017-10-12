@@ -30,12 +30,20 @@ public class TrackBroadcastReceiver extends Service {
         super.onCreate();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BroadcastTypes.METADATA_CHANGED);
-        //filter.addAction(BroadcastTypes.PLAYBACK_STATE_CHANGED);
         registerReceiver(trackReceiver, filter);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        boolean skipExplicit = intent.getBooleanExtra("skipExplicit", true);
+        String contentText;
+
+        if (skipExplicit) {
+            contentText = "Sanctify is filtering explicit tracks from your Spotify playback";
+        } else {
+            contentText = "Sanctify is running but is not filtering explicit content";
+        }
+
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(this, 0, notificationIntent, 0);
@@ -43,7 +51,7 @@ public class TrackBroadcastReceiver extends Service {
         Notification notification =
                 new Notification.Builder(this)
                         .setContentTitle("Sanctify - Spotify Explicit Track Filter")
-                        .setContentText("Sanctify is filtering explicit tracks from your Spotify playback.")
+                        .setContentText(contentText)
                         .setSmallIcon(R.drawable.trackskipper)
                         .setContentIntent(pendingIntent)
                         .setPriority(Notification.PRIORITY_DEFAULT)

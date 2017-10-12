@@ -4,6 +4,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -81,15 +82,6 @@ public class PrefsActivity extends AppCompatActivity {
             }
         });
 
-        // Button to save preferences and return to previous screen
-        Button btnDone = (Button)findViewById(R.id.btnDone);
-        btnDone.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                savePreferences();
-                finish();
-            }
-        });
-
         // Initialise controls
         initPreferences(historyAdapter, aliveAdapter);
 
@@ -101,6 +93,23 @@ public class PrefsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        savePreferences();
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
     private void savePreferences() {
         int historyItems = Integer.valueOf(spiHistory.getSelectedItem().toString());
         PreferencesUtil.getInstance().addPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS, historyItems);

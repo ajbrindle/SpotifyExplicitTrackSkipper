@@ -83,12 +83,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
 
         boolean isSet = PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT);
         swiExplicit.setChecked(isSet);
-        updateTrackService(isSet);
+        updateTrackService(true, isSet);
 
         swiExplicit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT, isChecked);
-                updateTrackService(isChecked);
+                updateTrackService(true, isChecked);
             }
         });
 
@@ -297,7 +297,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
                 Intent i = new Intent(getApplicationContext(), PrefsActivity.class);
                 startActivity(i);
                 return true;
-
+            case R.id.action_quit:
+                // Stop service
+                updateTrackService(false, false);
+                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -324,16 +327,19 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
         trackAdapter.toggleSelection(idx);
     }
 
-    private void updateTrackService(boolean start) {
+    private void updateTrackService(boolean start, boolean skipExplicit) {
         Intent i = new Intent(getApplicationContext(), TrackBroadcastReceiver.class);
         if (start) {
+            stopService(i);
             Log.d(TAG, "Track broadcast service started");
+            i.putExtra("skipExplicit", skipExplicit);
             startService(i);
         } else {
             Log.d(TAG, "Track broadcast service stopped");
             stopService(i);
         }
     }
+
     @Override
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
         gestureDetector.onTouchEvent(e);
