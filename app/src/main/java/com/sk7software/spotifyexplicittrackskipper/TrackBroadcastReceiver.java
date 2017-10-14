@@ -7,6 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -39,9 +41,9 @@ public class TrackBroadcastReceiver extends Service {
         String contentText;
 
         if (skipExplicit) {
-            contentText = "Sanctify is filtering explicit tracks from your Spotify playback";
+            contentText = "Filtering explicit tracks";
         } else {
-            contentText = "Sanctify is running but is not filtering explicit content";
+            contentText = "NOT filtering explicit tracks";
         }
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -53,6 +55,7 @@ public class TrackBroadcastReceiver extends Service {
                         .setContentTitle("Sanctify - Spotify Explicit Track Filter")
                         .setContentText(contentText)
                         .setSmallIcon(R.drawable.trackskipper)
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.sanctifyicon5))
                         .setContentIntent(pendingIntent)
                         .setPriority(Notification.PRIORITY_DEFAULT)
                         .build();
