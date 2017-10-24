@@ -22,6 +22,7 @@ public class AppConstants {
     public static final String PREFERENCE_SWIPE_ACTION = "PREF_SWIPE_ACTION";
 
     public static final String APP_BROADCAST_INTENT = "com.sk7software.spotify.trackchanged";
+    public static final String STOP_SERVICE_BROADCAST_INTENT = "com.sk7software.spotify.servicestop";
 
     public static final String EXPIRY_TIME_FORMAT = "dd/MM/yyyy HH:mm";
     public static final String PLAY_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";

@@ -7,7 +7,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/sanctifyicon5"
+        android:icon="@drawable/sanctifyicon7"
         android:label="Sanctify"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -37,6 +37,10 @@
             android:parentActivityName=".ui.AuthoriseActivity" />
         <activity android:name=".ui.PrefsActivity"
             android:parentActivityName=".ui.MainActivity" />
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:theme="@android:style/Theme.Translucent" />
     </application>
 
 </manifest>

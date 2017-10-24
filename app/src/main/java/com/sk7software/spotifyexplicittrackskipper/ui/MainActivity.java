@@ -48,7 +48,7 @@ import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements RecyclerView.OnItemTouchListener, View.OnClickListener, ActivityDataExchange {
+public class MainActivity extends AppCompatActivity implements RecyclerView.OnItemTouchListener, View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -61,6 +61,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
     private AdView mAdView;
 
     private BroadcastReceiver trackReceiver;
+
+    private BroadcastReceiver killReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            finish();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
         trackAdapter.setDB(db);
         trackView.setLayoutManager(new LinearLayoutManager(this));
         trackView.setAdapter(trackAdapter);
-        //showHistoryList();
 
         gestureDetector =
                 new GestureDetectorCompat(this, new TacksOnGestureListener());
@@ -120,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
         MobileAds.initialize(this, AppConstants.ADMOB_APP_ID);
         mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("E54B1FD6DA8E4366B1A1621B72868A5B")
+             //   .addTestDevice("E54B1FD6DA8E4366B1A1621B72868A5B")
                 .build();
         mAdView.loadAd(adRequest);
 
@@ -222,6 +228,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
             SpotifyKeepAlive alarm = new SpotifyKeepAlive();
             alarm.initialise(getApplicationContext(), (interval > 0 ? interval : 90));
         }
+
+        IntentFilter killFilter = new IntentFilter(AppConstants.STOP_SERVICE_BROADCAST_INTENT);
+        registerReceiver(killReceiver, killFilter);
     }
 
     private int calcMargin(Bitmap b, int top, int bottom) {
@@ -278,6 +287,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(killReceiver);
+    }
+
+    @Override
     public void onClick(View view) {
         if (view == null) return;
     }
@@ -308,8 +323,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
         }
     }
 
-    @Override
-    public void updateActivity() {
+    private void updateActivity() {
         final DatabaseUtil db = DatabaseUtil.getInstance(getApplicationContext());
         int limit = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS);
         final List<Track> tracksList = db.getTracks(limit);

@@ -15,10 +15,13 @@ import android.util.Log;
 import com.sk7software.spotifyexplicittrackskipper.ui.MainActivity;
 import com.sk7software.spotifyexplicittrackskipper.util.PreferencesUtil;
 
+import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
+
 public class TrackBroadcastReceiver extends Service {
 
     private static final String TAG = TrackBroadcastReceiver.class.getSimpleName();
     private static final int FOREGROUND_SERVICE_NOTIFICATION_ID = 31570;
+    private static final String STOP_ACTION = "STOP";
 
     static final class BroadcastTypes {
         static final String SPOTIFY_PACKAGE = "com.spotify.music";
@@ -46,17 +49,33 @@ public class TrackBroadcastReceiver extends Service {
             contentText = "NOT filtering explicit tracks";
         }
 
+        if (intent.getAction() != null) {
+            Log.d(TAG, "Action: " + intent.getAction());
+
+            if (STOP_ACTION.equals(intent.getAction())) {
+                stopSelf();
+                Intent i = new Intent(AppConstants.STOP_SERVICE_BROADCAST_INTENT);
+                sendBroadcast(i);
+            }
+        }
+
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+        Intent stopSelf = new Intent(this, TrackBroadcastReceiver.class);
+        stopSelf.setAction(STOP_ACTION);
+        PendingIntent pStopSelf =
+                PendingIntent.getService(this, 0, stopSelf, 0);
 
         Notification notification =
                 new Notification.Builder(this)
                         .setContentTitle("Sanctify - Spotify Explicit Track Filter")
                         .setContentText(contentText)
                         .setSmallIcon(R.drawable.trackskipper)
-                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.sanctifyicon5))
+                        .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.sanctifyicon7))
                         .setContentIntent(pendingIntent)
+                        .addAction(R.drawable.ic_settings_power, "Stop", pStopSelf)
                         .setPriority(Notification.PRIORITY_DEFAULT)
                         .build();
 

@@ -51,13 +51,19 @@
         android:onClick="onClick"
         android:id="@+id/txtAdvanced" /-->
 
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/adView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        ads:adUnitId="ca-app-pub-9041522149264298/4422349965"
-        ads:adSize="SMART_BANNER"/>
+        android:layout_height="wrap_content">
+
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            ads:adUnitId="ca-app-pub-9041522149264298/4422349965"
+            ads:adSize="SMART_BANNER"/>
+
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/txtListTitle"

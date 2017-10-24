@@ -137,7 +137,7 @@ public class PrefsActivityTest {
         Spinner s2 = (Spinner)pa.findViewById(R.id.spiHistory);
         s1.setSelection(6);
         s2.setSelection(5);
-        pa.findViewById(R.id.btnDone).performClick();
+        pa.onBackPressed();
 
         assertEquals(prefs.getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL), 600);
         assertEquals(prefs.getIntPreference(AppConstants.PREFERNECE_MAX_HISTORY_ITEMS), 150);
