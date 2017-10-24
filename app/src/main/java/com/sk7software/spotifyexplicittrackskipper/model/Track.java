@@ -136,11 +136,9 @@ public class Track {
         return album.getName();
     }
 
-    public String getAlbumArt() {
-        if (album.getImages().length == 1) {
-            return album.getImages()[0].getUrl();
-        } else if (album.getImages().length > 1) {
-            return album.getImages()[1].getUrl();
+    public String getAlbumArt(int displayWidPix) {
+        if (album.getImages().length >= 1) {
+            return album.getBestFitImage(displayWidPix).getUrl();
         } else {
             throw new IllegalStateException("Album artwork not defined");
         }

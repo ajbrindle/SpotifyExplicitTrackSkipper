@@ -22,6 +22,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -39,6 +40,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
 import com.sk7software.spotifyexplicittrackskipper.TrackBroadcastReceiver;
 import com.sk7software.spotifyexplicittrackskipper.model.Track;
+import com.sk7software.spotifyexplicittrackskipper.util.DisplayUtil;
 import com.sk7software.spotifyexplicittrackskipper.util.PreferencesUtil;
 import com.sk7software.spotifyexplicittrackskipper.R;
 import com.sk7software.spotifyexplicittrackskipper.SpotifyKeepAlive;
@@ -101,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
 
         trackView = (RecyclerView)findViewById(R.id.listHistory);
         trackView.addOnItemTouchListener(this);
-        trackAdapter = new TrackAdapter(LayoutInflater.from(this));
+        trackAdapter = new TrackAdapter(LayoutInflater.from(this), DisplayUtil.getDisplayWidthPix(getWindowManager()));
         trackAdapter.setDB(db);
         trackView.setLayoutManager(new LinearLayoutManager(this));
         trackView.setAdapter(trackAdapter);

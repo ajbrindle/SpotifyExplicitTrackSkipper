@@ -88,4 +88,16 @@ public class TrackConstructTest {
         Track t = Track.createFromJSON(testJSON);
         assertNull(t.getAlbum().getName());
     }
+
+    @Test
+    public void testBestFitImages() throws Exception {
+        JSONObject testJSON = fetchJSON("mrbrightside.json");
+        assertNotNull(testJSON);
+
+        Track t = Track.createFromJSON(testJSON);
+        assertEquals("https://i.scdn.co/image/d0186ad64df7d6fc5f65c20c7d16f4279ffeb815", t.getAlbumArt(1000));
+        assertEquals("https://i.scdn.co/image/7c3ec33d478f5f517eeb5339c2f75f150e4d601e", t.getAlbumArt(800));
+        assertEquals("https://i.scdn.co/image/ac68a9e4a867ec3ce8249cd90a2d7c73755fb487", t.getAlbumArt(5000));
+        assertEquals("https://i.scdn.co/image/7c3ec33d478f5f517eeb5339c2f75f150e4d601e", t.getAlbumArt(10));
+    }
 }

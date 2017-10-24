@@ -6,6 +6,7 @@ package com.sk7software.spotifyexplicittrackskipper.model;
 
 public class AlbumArt {
     private String url;
+    private int width;
 
     public AlbumArt() {}
 
@@ -15,5 +16,13 @@ public class AlbumArt {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
     }
 }

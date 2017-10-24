@@ -104,7 +104,7 @@ public class DatabaseUtil extends SQLiteOpenHelper {
         }
     }
 
-    public void addTrack(Track track) {
+    public void addTrack(Track track, int displayWidPix) {
         String sql = "INSERT INTO TRACK_HISTORY " +
                 "(title, artist, album, spotify_id, image_url, play_time, explicit, skipped) " +
                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?);";
@@ -117,7 +117,7 @@ public class DatabaseUtil extends SQLiteOpenHelper {
         statement.bindString(col++, track.getArtistName());
         statement.bindString(col++, track.getAlbumName());
         statement.bindString(col++, track.getId());
-        statement.bindString(col++, track.getAlbumArt());
+        statement.bindString(col++, track.getAlbumArt(displayWidPix));
         statement.bindLong(col++, track.getPlayDate().getTime());
         statement.bindLong(col++, (track.isExplicit() ? 1 : 0));
         statement.bindLong(col++, (track.isSkipped() ? 1 : 0));

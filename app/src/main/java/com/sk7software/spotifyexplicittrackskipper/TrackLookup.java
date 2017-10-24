@@ -3,13 +3,16 @@ package com.sk7software.spotifyexplicittrackskipper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 import com.sk7software.spotifyexplicittrackskipper.model.Auth;
 import com.sk7software.spotifyexplicittrackskipper.ui.ActivityDataExchange;
 import com.sk7software.spotifyexplicittrackskipper.model.Track;
 import com.sk7software.spotifyexplicittrackskipper.util.DateUtil;
+import com.sk7software.spotifyexplicittrackskipper.util.DisplayUtil;
 import com.sk7software.spotifyexplicittrackskipper.util.PreferencesUtil;
 import com.sk7software.spotifyexplicittrackskipper.util.SpotifyUtil;
 
@@ -108,7 +111,8 @@ public class TrackLookup {
             // Store track info in database
             t.setPlayDate(new Date());
             Log.d(TAG, t.toString());
-            db.addTrack(t);
+            WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+            db.addTrack(t, DisplayUtil.getDisplayWidthPix(wm));
         }
     }
 

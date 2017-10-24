@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,19 +33,14 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
     private LayoutInflater inflater;
     private SparseBooleanArray selectedItems;
     private DatabaseUtil db;
+    private int displayWidPix;
 
     private static final SimpleDateFormat PLAY_TIME_FORMAT = new SimpleDateFormat(AppConstants.PLAY_TIME_DISPLAY_FORMAT);
     private static final String TAG = TrackAdapter.class.getSimpleName();
 
-    public TrackAdapter(LayoutInflater inflater) {
+    public TrackAdapter(LayoutInflater inflater, int displayWidPix) {
         this.inflater = inflater;
-        this.selectedItems = new SparseBooleanArray();
-    }
-
-    public TrackAdapter(List<Track> tracks, DatabaseUtil db, LayoutInflater inflater) {
-        this.tracks = tracks;
-        this.db = db;
-        this.inflater = inflater;
+        this.displayWidPix = displayWidPix;
         this.selectedItems = new SparseBooleanArray();
     }
 
@@ -190,7 +186,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.TrackViewHol
                 albumImg.setImageBitmap(db.retrieveAlbumArt(t.getId()));
             } else {
                 // Load image from URL
-                new ImageLoadTask(t.getAlbumArt(), t.getId(), db, albumImg).execute();
+                new ImageLoadTask(t.getAlbumArt(displayWidPix), t.getId(), db, albumImg).execute();
             }
         }
     }
