@@ -13,6 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
 import com.sk7software.spotifyexplicittrackskipper.model.Auth;
@@ -32,8 +33,9 @@ import java.util.Map;
 
 public class SpotifyUtil {
 
-    public static String SPOTIFY_REFRESH_URL = "http://www.sk7software.com/spotify/SpotifyAuthorise/refresh.php?refreshToken=";
-    public static String SPOTIFY_USER_URL = "https://api.spotify.com/v1/me";
+    public static final String SPOTIFY_REFRESH_URL = "http://www.sk7software.com/spotify/SpotifyAuthorise/refresh.php?refreshToken=";
+    public static final String SPOTIFY_USER_URL = "https://api.spotify.com/v1/me";
+    public static final String SPOTIFY_NEXT_URL = "https://api.spotify.com/v1/me/player/next";
 
     private static final String TAG = SpotifyUtil.class.getSimpleName();
     private static RequestQueue queue;
@@ -88,7 +90,7 @@ public class SpotifyUtil {
         getQueue(context).add(jsObjRequest);
     }
 
-    public static void showLoginDetails(final Context context, final SpotifyCallback callback) { //final TextView txt, final ImageView imgUser) {
+    public static void showLoginDetails(final Context context, final SpotifyCallback callback) {
         String url = SPOTIFY_USER_URL;
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -167,6 +169,7 @@ public class SpotifyUtil {
         getQueue(context).add(jsObjRequest);
     }
 
+    /*
     public static boolean skipTrack(Context context) {
         boolean skip = PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT);
 
@@ -185,5 +188,33 @@ public class SpotifyUtil {
         }
 
         return skip;
+    }
+    */
+
+    public static boolean skipTrack(Context context) {
+        StringRequest stringRequest = new StringRequest
+                (Request.Method.POST, SPOTIFY_NEXT_URL, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d(TAG, "Track skipped: " + response);
+                    }
+                },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.d(TAG, "Error => " + error.toString());
+                            }
+                        }
+                ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                String token = PreferencesUtil.getInstance().getStringPreference(AppConstants.PREFERENCE_AUTH_TOKEN);
+                params.put("Authorization", "Bearer " + token);
+                return params;
+            }
+        };
+        getQueue(context).add(stringRequest);
+        return true;
     }
 }
