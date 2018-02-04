@@ -33,7 +33,8 @@ import java.util.Map;
 
 public class SpotifyUtil {
 
-    public static final String SPOTIFY_REFRESH_URL = "http://www.sk7software.com/spotify/SpotifyAuthorise/refresh.php?refreshToken=";
+//    public static final String SPOTIFY_REFRESH_URL = "http://www.sk7software.com/spotify/SpotifyAuthorise/refresh.php?refreshToken=";
+    public static final String SPOTIFY_REFRESH_URL = "https://spotifyauthorise.eu-gb.mybluemix.net/refresh.php?refreshToken=";
     public static final String SPOTIFY_USER_URL = "https://api.spotify.com/v1/me";
     public static final String SPOTIFY_NEXT_URL = "https://api.spotify.com/v1/me/player/next";
 
