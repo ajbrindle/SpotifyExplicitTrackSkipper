@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.sk7software.spotifyexplicittrackskipper.ui.AuthoriseActivity;
 import com.sk7software.spotifyexplicittrackskipper.ui.MainActivity;
 import com.sk7software.spotifyexplicittrackskipper.util.PreferencesUtil;
 
@@ -41,12 +42,22 @@ public class TrackBroadcastReceiver extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         boolean skipExplicit = intent.getBooleanExtra("skipExplicit", true);
-        String contentText;
+        boolean loggedOut = intent.getBooleanExtra("loggedOut", false);
 
-        if (skipExplicit) {
+        String contentText;
+        int smallIcon;
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+
+        if (loggedOut) {
+            contentText = "Not logged into Spotify - tap to re-authenticate";
+            smallIcon = R.drawable.trackskipper_off;
+            notificationIntent = new Intent(this, AuthoriseActivity.class);
+        } else if (skipExplicit) {
             contentText = "Filtering explicit tracks";
+            smallIcon = R.drawable.trackskipper;
         } else {
             contentText = "NOT filtering explicit tracks";
+            smallIcon = R.drawable.trackskipper_off;
         }
 
         if (intent.getAction() != null) {
@@ -59,7 +70,6 @@ public class TrackBroadcastReceiver extends Service {
             }
         }
 
-        Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
@@ -72,7 +82,7 @@ public class TrackBroadcastReceiver extends Service {
                 new Notification.Builder(this)
                         .setContentTitle("Sanctify - Spotify Explicit Track Filter")
                         .setContentText(contentText)
-                        .setSmallIcon(R.drawable.trackskipper)
+                        .setSmallIcon(smallIcon)
                         .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.sanctifyicon7))
                         .setContentIntent(pendingIntent)
                         .addAction(R.drawable.ic_settings_power, "Stop", pStopSelf)
@@ -112,13 +122,16 @@ public class TrackBroadcastReceiver extends Service {
                 String artistName = intent.getStringExtra("artist");
                 String trackName = intent.getStringExtra("track");
                 Log.d(TAG, "Track: " + trackName + "; Artist: " + artistName + " (" + trackId + ")");
-                TrackLookup t = new TrackLookup(context);
-                t.skipExplicit(trackId);
 
-                if (PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE)) {
-                    int interval = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL);
-                    SpotifyKeepAlive alarm = new SpotifyKeepAlive();
-                    alarm.initialise(context, (interval > 0 ? interval : 90));
+                if (trackId.length() > 0) {
+                    TrackLookup t = new TrackLookup(context);
+                    t.skipExplicit(trackId);
+
+                    if (PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_KEEP_ALIVE)) {
+                        int interval = PreferencesUtil.getInstance().getIntPreference(AppConstants.PREFERENCE_KEEP_ALIVE_INTERVAL);
+                        SpotifyKeepAlive alarm = new SpotifyKeepAlive();
+                        alarm.initialise(context, (interval > 0 ? interval : 90));
+                    }
                 }
             }
         }

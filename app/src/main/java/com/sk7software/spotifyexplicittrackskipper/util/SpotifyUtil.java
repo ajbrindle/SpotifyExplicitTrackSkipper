@@ -16,6 +16,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
+import com.sk7software.spotifyexplicittrackskipper.BuildConfig;
+import com.sk7software.spotifyexplicittrackskipper.TrackBroadcastReceiver;
+import com.sk7software.spotifyexplicittrackskipper.exception.NotLoggedInException;
 import com.sk7software.spotifyexplicittrackskipper.model.Auth;
 import com.sk7software.spotifyexplicittrackskipper.model.Track;
 import com.sk7software.spotifyexplicittrackskipper.model.User;
@@ -53,12 +56,25 @@ public class SpotifyUtil {
         public void onError(Exception e);
     }
 
-    public static boolean refreshSpotifyAuthToken(Context context, String refreshToken, SpotifyUtil.SpotifyCallback callback) {
-        if ("".equals(refreshToken)) {
-            return false;
+    public static void refreshSpotifyAuthToken(Context context, String refreshToken, SpotifyUtil.SpotifyCallback callback)
+        throws NotLoggedInException {
+        if ("".equals(refreshToken) && BuildConfig.FLAVOR.equals("lite")) {
+            // Can't refresh so update service to say not skipping tracks
+            Intent i = new Intent(context, TrackBroadcastReceiver.class);
+            context.stopService(i);
+
+            // Set the refresh token to "no refresh" to stop the service going into a stop/start loop
+            PreferencesUtil.getInstance().addPreference(AppConstants.PREFERENCE_REFRESH_TOKEN, AppConstants.NO_REFRESH);
+            i.putExtra("skipExplicit", false);
+            i.putExtra("loggedOut", true);
+            Log.d(TAG, "Restarted service in logged-out mode");
+            context.startService(i);
+            throw new NotLoggedInException();
+        } else if (AppConstants.NO_REFRESH.equals(refreshToken)) {
+            // Do nothing
+            throw new NotLoggedInException();
         } else {
             getNewAccessToken(context, refreshToken, callback);
-            return true;
         }
     }
 
@@ -193,29 +209,33 @@ public class SpotifyUtil {
     */
 
     public static boolean skipTrack(Context context) {
-        StringRequest stringRequest = new StringRequest
-                (Request.Method.POST, SPOTIFY_NEXT_URL, new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d(TAG, "Track skipped: " + response);
-                    }
-                },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.d(TAG, "Error => " + error.toString());
-                            }
+        boolean skip = PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT);
+
+        if (skip) {
+            StringRequest stringRequest = new StringRequest
+                    (Request.Method.POST, SPOTIFY_NEXT_URL, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.d(TAG, "Track skipped: " + response);
                         }
-                ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                String token = PreferencesUtil.getInstance().getStringPreference(AppConstants.PREFERENCE_AUTH_TOKEN);
-                params.put("Authorization", "Bearer " + token);
-                return params;
-            }
-        };
-        getQueue(context).add(stringRequest);
-        return true;
+                    },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    Log.d(TAG, "Error => " + error.toString());
+                                }
+                            }
+                    ) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    String token = PreferencesUtil.getInstance().getStringPreference(AppConstants.PREFERENCE_AUTH_TOKEN);
+                    params.put("Authorization", "Bearer " + token);
+                    return params;
+                }
+            };
+            getQueue(context).add(stringRequest);
+        }
+        return skip;
     }
 }

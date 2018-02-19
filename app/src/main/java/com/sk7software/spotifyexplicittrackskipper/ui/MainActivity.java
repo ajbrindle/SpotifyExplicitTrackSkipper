@@ -38,6 +38,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.sk7software.spotifyexplicittrackskipper.AppConstants;
+import com.sk7software.spotifyexplicittrackskipper.BuildConfig;
 import com.sk7software.spotifyexplicittrackskipper.TrackBroadcastReceiver;
 import com.sk7software.spotifyexplicittrackskipper.model.Track;
 import com.sk7software.spotifyexplicittrackskipper.util.DisplayUtil;
@@ -49,6 +50,8 @@ import com.sk7software.spotifyexplicittrackskipper.db.DatabaseUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.sk7software.spotifyexplicittrackskipper.BuildConfig.FLAVOR;
 
 public class MainActivity extends AppCompatActivity implements RecyclerView.OnItemTouchListener, View.OnClickListener {
 
@@ -124,13 +127,19 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
                 }
         );
 
-        // Initialise ads
-        MobileAds.initialize(this, AppConstants.ADMOB_APP_ID);
         mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-             //   .addTestDevice("E54B1FD6DA8E4366B1A1621B72868A5B")
-                .build();
-        mAdView.loadAd(adRequest);
+
+        // Show ads in lite verison
+        if (FLAVOR.equals("lite")) {
+            // Initialise ads
+            MobileAds.initialize(this, AppConstants.ADMOB_APP_ID);
+            AdRequest adRequest = new AdRequest.Builder()
+                    //   .addTestDevice("E54B1FD6DA8E4366B1A1621B72868A5B")
+                    .build();
+            mAdView.loadAd(adRequest);
+        } else {
+            mAdView.setVisibility(View.GONE);
+        }
 
         // Set the item touch helper to define list item behaviour on swipe
         final BitmapFactory.Options options;
@@ -263,8 +272,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
     @Override
     protected void onResume() {
         super.onResume();
-        showHistoryList();
         setupReceiver();
+        showHistoryList();
     }
 
     private void setupReceiver() {

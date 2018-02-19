@@ -163,6 +163,24 @@ public class DatabaseUtil extends SQLiteOpenHelper {
         return tracks;
     }
 
+    public Track getTrackInfo(String id) {
+        Cursor cursor = null;
+        Track track = null;
+
+        try {
+            cursor = database.query("TRACK_HISTORY", new String[]{"TITLE", "ARTIST", "ALBUM", "IMAGE_URL", "PLAY_TIME", "EXPLICIT"},
+                    "SPOTIFY_ID=?", new String[] {String.valueOf(id)}, null, null, "PLAY_TIME DESC", "1");
+            while (cursor.moveToNext()) {
+                track = new Track(cursor.getString(0), cursor.getString(1), cursor.getString(2), id, cursor.getString(3),
+                        cursor.getLong(4), cursor.getLong(5), 0);
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return track;
+    }
+
     public boolean imageExists(String id) {
         Cursor cursor = null;
         boolean imageExists = false;

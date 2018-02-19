@@ -17,6 +17,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+        lite {
+            applicationIdSuffix ".lite"
+            versionNameSuffix "-lite"
+        }
+        full {
+            applicationIdSuffix ".full"
+            versionNameSuffix "-full"
+        }
+    }
     testOptions {
         unitTests.returnDefaultValues = true
     }
@@ -43,8 +53,9 @@ dependencies {
     })
     //androidTestCompile 'com.squareup.retrofit2:retrofit:2.3.0'
 
-    compile 'com.spotify.sdk:spotify-auth:1.0.0-beta13@aar'
-    compile 'com.spotify.sdk:spotify-player:1.0.0-beta13@aar'
+    //compile 'com.spotify.sdk:spotify-auth:1.0.0-beta13@aar'
+    //compile 'com.spotify.sdk:spotify-player:1.0.0-beta13@aar'
+    compile 'com.spotify.android:auth:1.0.0-alpha'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
