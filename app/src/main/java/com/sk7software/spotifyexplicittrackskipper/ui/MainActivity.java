@@ -131,9 +131,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
         // Show ads in lite verison
         if (FLAVOR.equals("lite")) {
             // Initialise ads
-            MobileAds.initialize(this, AppConstants.ADMOB_APP_ID);
+            Log.d(TAG, "Initialising ads");
+            MobileAds.initialize(this, getString(R.string.ADMOB_APP_ID));
             AdRequest adRequest = new AdRequest.Builder()
-                    //   .addTestDevice("E54B1FD6DA8E4366B1A1621B72868A5B")
+                    //.addTestDevice("88E21EE6ECA7495CF81BF91BFB5201F6")
                     .build();
             mAdView.loadAd(adRequest);
         } else {
@@ -322,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
                 Intent i = new Intent(getApplicationContext(), PrefsActivity.class);
                 startActivity(i);
                 return true;
-            case R.id.action_quit:
+            case R.id.action_quits:
                 // Stop service
                 updateTrackService(false, false);
                 return true;

@@ -35,6 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
+            android:paddingBottom="10dp"
             android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
             android:text="Skip Explicit Tracks" />
 
@@ -60,7 +61,7 @@
             android:id="@+id/adView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            ads:adUnitId="ca-app-pub-9041522149264298/4422349965"
+            ads:adUnitId="@string/ADMOB_APP_UNIT_ID"
             ads:adSize="SMART_BANNER"/>
 
     </RelativeLayout>

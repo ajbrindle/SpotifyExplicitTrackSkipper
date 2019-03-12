@@ -8,7 +8,7 @@
         android:title="Settings"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/action_quit"
+        android:id="@+id/action_quits"
         android:icon="@drawable/ic_settings_power"
         android:title="Shutdown"
         app:showAsAction="ifRoom"/>

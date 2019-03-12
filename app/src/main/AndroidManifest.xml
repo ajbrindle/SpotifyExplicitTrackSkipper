@@ -11,6 +11,11 @@
         android:label="Sanctify"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/ADMOB_APP_ID" />
+
         <activity
             android:name=".ui.AuthoriseActivity"
             android:label="@string/app_name">

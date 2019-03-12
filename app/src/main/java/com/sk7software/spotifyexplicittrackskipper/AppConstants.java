@@ -33,9 +33,6 @@ public class AppConstants {
     public static final String REDIRECT_URI_LITE = "sk7setc://callback";
     public static final String SPOTIFY_SCOPES = "user-read-currently-playing user-read-playback-state user-modify-playback-state";
 
-    public static final String ADMOB_APP_ID = BuildConfig.ADMOB_APP_ID;
-    public static final String ADMOB_APP_UNIT_ID = BuildConfig.ADMOB_APP_UNIT_ID;
-
     public static final String NO_REFRESH = "NO_REFRESH";
 
     public static final int SWIPE_ACTION_DELETE = 0;
