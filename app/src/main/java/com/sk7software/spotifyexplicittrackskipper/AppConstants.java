@@ -11,7 +11,7 @@ import java.util.Calendar;
 
 public class AppConstants {
     // Preferences constants
-    public static final String APP_PREFERENCES_KEY = "SK7_SPOTIFY_TRACK_PREFS";
+    public static final String APP_PREFERENCES_KEY = "SK7_SPOTIFY_TRACK_PREFS_" + BuildConfig.FLAVOR.toUpperCase();
     public static final String PREFERENCE_AUTH_TOKEN = "PREF_SPOTIFY_AUTH_TOKEN";
     public static final String PREFERENCE_REFRESH_TOKEN = "PREF_SPOTIFY_REFRESH_TOKEN";
     public static final String PREFERENCE_SKIP_EXPLICIT = "PREF_SKIP_EXPLICIT";
@@ -28,14 +28,13 @@ public class AppConstants {
     public static final String PLAY_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String PLAY_TIME_DISPLAY_FORMAT = "dd/MM/yyyy HH:mm:ss";
 
-    public static final String CLIENT_ID = "3b479b12ae87444c9384b1e5a14ca708";
-//    public static final String REDIRECT_URI = "http://www.sk7software.com/spotify/SpotifyAuthorise/token.php";
+    public static final String CLIENT_ID = BuildConfig.CLIENT_ID;
     public static final String REDIRECT_URI = "https://spotifyauthorise.eu-gb.mybluemix.net/token.php";
     public static final String REDIRECT_URI_LITE = "sk7setc://callback";
     public static final String SPOTIFY_SCOPES = "user-read-currently-playing user-read-playback-state user-modify-playback-state";
 
-    public static final String ADMOB_APP_ID = "ca-app-pub-9041522149264298~7515417162";
-    public static final String ADMOB_APP_UNIT_ID = "ca-app-pub-9041522149264298/4422349965";
+    public static final String ADMOB_APP_ID = BuildConfig.ADMOB_APP_ID;
+    public static final String ADMOB_APP_UNIT_ID = BuildConfig.ADMOB_APP_UNIT_ID;
 
     public static final String NO_REFRESH = "NO_REFRESH";
 

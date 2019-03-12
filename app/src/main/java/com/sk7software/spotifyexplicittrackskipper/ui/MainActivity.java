@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerView.OnIt
 
         // Initialise context for preferences
         PreferencesUtil.init(getApplicationContext());
-
         swiExplicit = (Switch)findViewById(R.id.swiExplicitTracks);
 
         boolean isSet = PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT);

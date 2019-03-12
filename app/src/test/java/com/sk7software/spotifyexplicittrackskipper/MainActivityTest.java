@@ -63,6 +63,11 @@ public class MainActivityTest {
     }
 
     @Test
+    public void testYes() {
+        assertTrue(true);
+    }
+
+    @Test
     public void testSettingsIntent() {
         MainActivity ma = Robolectric.setupActivity(MainActivity.class);
         MenuItem settings = new RoboMenuItem(R.id.action_settings); //shadowOf(ma).getOptionsMenu().findItem(R.id.action_settings);
@@ -81,33 +86,4 @@ public class MainActivityTest {
         assertFalse(PreferencesUtil.getInstance().getBooleanPreference(AppConstants.PREFERENCE_SKIP_EXPLICIT));
     }
 
-//    @Test
-//    public void testTrackHistoryShown() {
-//        TestUtilities.insertTracks(3, 0, db);
-//        List<Track> tracks = db.getTracks(0);
-//        ActivityController<MainActivity> activityController = Robolectric.buildActivity(MainActivity.class);
-//        activityController.create().start().visible();
-//
-//        ShadowActivity myActivityShadow = shadowOf(activityController.get());
-//
-//        RecyclerView currentRecyclerView = ((RecyclerView) myActivityShadow.findViewById(R.id.listHistory));
-//        currentRecyclerView.getChildAt(0).performClick();
-//        assertEquals(3, currentRecyclerView.getChildCount());
-//    }
-
-//    @Test
-//    public void testTrackInfo() {
-//        TestUtilities.insertTracks(3, 0, db);
-//        ActivityController<MainActivity> activityController = Robolectric.buildActivity(MainActivity.class);
-//        activityController.create().start().visible();
-//
-//        ShadowActivity myActivityShadow = shadowOf(activityController.get());
-//
-//        RecyclerView currentRecyclerView = ((RecyclerView) myActivityShadow.findViewById(R.id.listHistory));
-//        currentRecyclerView.measure(0,0);
-//        currentRecyclerView.layout(0,0,100,1000);
-//        TrackAdapter.TrackViewHolder tv = (TrackAdapter.TrackViewHolder)currentRecyclerView.findViewHolderForAdapterPosition(0);
-//        assertEquals("abcd1234", tv.getId());
-//
-//    }
 }

@@ -14,7 +14,9 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import static com.sk7software.spotifyexplicittrackskipper.TestUtilities.TEST_TIME;
@@ -23,6 +25,7 @@ import static com.sk7software.spotifyexplicittrackskipper.TestUtilities.insertAl
 import static com.sk7software.spotifyexplicittrackskipper.TestUtilities.insertTracks;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -144,5 +147,26 @@ public class DatabaseUtilTest {
     @Test
     public void testNotTagged() {
         assertEquals(db.isTagged("abc123"), DatabaseUtil.NOT_TAGGED);
+    }
+
+    @Test
+    public void testLastPlayed() {
+        insertTracks(3, TEST_TIME, db);
+        insertTracks(3, 0, db);
+        Track t = db.getTrackInfo("abcd1234");
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c1.setTime(t.getPlayDate());
+        c2.setTime(new Date());
+        assertEquals(c1.get(Calendar.DAY_OF_MONTH), c2.get(Calendar.DAY_OF_MONTH));
+        assertEquals(c1.get(Calendar.MONTH), c2.get(Calendar.MONTH));
+        assertEquals(c1.get(Calendar.YEAR), c2.get(Calendar.YEAR));
+    }
+
+    @Test
+    public void testNoLastPlayed() {
+        insertTracks(3, 0, db);
+        Track t = db.getTrackInfo("not_in_db");
+        assertNull(t);
     }
 }
