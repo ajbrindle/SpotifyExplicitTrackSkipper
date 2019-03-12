@@ -1,0 +1,130 @@
+{
+  "project_info": {
+    "project_number": "685215811879",
+    "firebase_url": "https://sanctify-1d68b.firebaseio.com",
+    "project_id": "sanctify-1d68b",
+    "storage_bucket": "sanctify-1d68b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:685215811879:android:b19f6c4900d30a8a",
+        "android_client_info": {
+          "package_name": "com.sk7software.spotifyexplicittrackskipper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "685215811879-jthpfarflgamsanamsajfea0ev65m9fe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhl8BmzBCyv9a9PukSKNk_ukQktIRcnsQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:685215811879:android:66b769aa1f4ffb10",
+        "android_client_info": {
+          "package_name": "com.sk7software.spotifyexplicittrackskipper.full"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "685215811879-bbd5p1r72qp1u0to91ai9nan0m6ld0lm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sk7software.spotifyexplicittrackskipper.full",
+            "certificate_hash": "c79ac2dbfb136223ed961736ddb38548450524b0"
+          }
+        },
+        {
+          "client_id": "685215811879-jthpfarflgamsanamsajfea0ev65m9fe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhl8BmzBCyv9a9PukSKNk_ukQktIRcnsQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "685215811879-jthpfarflgamsanamsajfea0ev65m9fe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:685215811879:android:f97121c41980aa67",
+        "android_client_info": {
+          "package_name": "com.sk7software.spotifyexplicittrackskipper.lite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "685215811879-tbu76jqe6rq317mjpk2rmvv2mq402kcv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sk7software.spotifyexplicittrackskipper.lite",
+            "certificate_hash": "c79ac2dbfb136223ed961736ddb38548450524b0"
+          }
+        },
+        {
+          "client_id": "685215811879-jthpfarflgamsanamsajfea0ev65m9fe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhl8BmzBCyv9a9PukSKNk_ukQktIRcnsQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "685215811879-jthpfarflgamsanamsajfea0ev65m9fe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
